@@ -12,8 +12,15 @@ UK compliance platform for first-time employers. One guided journey: employment 
 
 ## Running the app
 
-> Placeholder — the application is scaffolded in Prompt 1 of the build pack. Run instructions (pnpm dev, Supabase local setup, environment variables) will be written here when the scaffold lands.
+```bash
+pnpm install
+pnpm dev        # http://localhost:3000
+```
+
+- `/dev/system` — the full component library in every state, mirroring the Style Reference prototype.
+- Copy `.env.example` to `.env.local` and fill in keys as modules land (Supabase from Prompt 2).
+- Behind a TLS-intercepting proxy, set `NODE_OPTIONS=--use-system-ca` so npm/pnpm can reach the registry.
 
 ## Testing
 
-> Placeholder — `pnpm gate` will run the full gate suite (golden tests, adversarial examiner suite, RLS suite, grep gates, Lighthouse budgets) once test infrastructure lands.
+`pnpm gate` runs the gate suite (typecheck + lint today; golden tests, adversarial examiner suite, RLS suite, grep gates and Lighthouse budgets join it prompt by prompt, consolidated in Prompt 16).
