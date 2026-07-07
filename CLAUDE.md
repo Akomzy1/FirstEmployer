@@ -7,7 +7,7 @@
 FirstEmployer is a UK compliance platform for first-time employers (sole traders and micro-businesses: plumbers, salon owners, café owners — low digital confidence, mobile-first, anxious). It guides one continuous journey: employment status determination → HMRC/payroll/pension/insurance setup → AI-generated, independently examined employment documents → right-to-work checks → a live compliance dashboard that monitors obligations forever. Delivered as an installable PWA. £9.99/£14.99/£24.99 monthly tiers.
 
 **Sources of truth, in order of authority:**
-1. `/docs/PRD-v1.1.md` — wins on WHAT the product does (behaviour, rules, requirements).
+1. `/docs/PRD-v1.2.md` — wins on WHAT the product does (behaviour, rules, requirements).
 2. `/design/prototype/*.html` — wins on HOW it looks (Claude Design exports; binding visual spec).
 3. `/docs/Relume-Wireframe-Brief-v1.md` — reference only where 1 and 2 are silent.
 
