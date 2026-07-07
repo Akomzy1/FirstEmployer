@@ -9,7 +9,6 @@ FirstEmployer is a UK compliance platform for first-time employers (sole traders
 **Sources of truth, in order of authority:**
 1. `/docs/PRD-v1.2.md` — wins on WHAT the product does (behaviour, rules, requirements).
 2. `/design/prototype/*.html` — wins on HOW it looks (Claude Design exports; binding visual spec).
-3. `/docs/Relume-Wireframe-Brief-v1.md` — reference only where 1 and 2 are silent.
 
 The canonical demo scenario used in ALL seeded/dev data: **Dave Okonkwo, DO Plumbing & Heating Ltd (limited company, Walsall), hiring Liam Carter, apprentice plumber, £8.00/hour, 40 hrs/week, start date 3 August 2026.** Keep this continuous across every screen and fixture.
 
