@@ -306,7 +306,7 @@ export function StatusAdvisorFlow({ initial }: { initial: Draft }) {
     const isAmb = det.confidence === "ambiguous";
     const dateStr = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
     return (
-      <Flow footer={<Button variant="primary" style={{ width: "100%" }} onClick={() => router.push("/app")}>Start your setup checklist <Icon name="arrow_forward" size={20} /></Button>}>
+      <Flow footer={<Button variant="primary" style={{ width: "100%" }} onClick={() => router.push("/app/setup")}>Start your setup checklist <Icon name="arrow_forward" size={20} /></Button>}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "var(--verified-green-50)", color: "var(--verified-green-700)", borderRadius: 999, padding: "7px 14px", font: "var(--text-label)", marginBottom: 18 }}>
           <Icon name="check_circle" size={17} fill /> Determination saved to your vault
         </div>

@@ -55,7 +55,7 @@ export default async function JourneyHomePage() {
       note: hasSetupWork
         ? `${openObligations.length} of ${obl.length} steps still need you.`
         : "Register with HMRC, set up payroll, pension and insurance.",
-      route: null,
+      route: "/app/setup",
     },
     {
       id: "contracts",

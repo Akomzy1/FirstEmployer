@@ -24,6 +24,12 @@ export interface StatutoryConfig {
   insurance: {
     el_min_cover: number;
     el_penalty_per_day: number;
+    /** Penalty for failing to display/produce the EL certificate (ELCI Act s.5). */
+    el_certificate_display_penalty: number;
+  };
+  paye: {
+    /** Lower Earnings Limit — pay above this per week triggers PAYE/NI reporting. */
+    lel_weekly: number;
   };
   ssp: {
     day_one: boolean;

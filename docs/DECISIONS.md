@@ -121,6 +121,16 @@ Approved by: build session (prototype gap; PRD/constitution authority).
 CLAUDE.md §4 mandates "server-side PDF generation" but names no library. Added **@react-pdf/renderer** (runtime dependency) to render the determination PDF server-side; it will be reused for contract/variation-letter/audit-pack PDFs (Prompts 6/7/9/10). Uses react-pdf's built-in Helvetica rather than the brand woff2 fonts (react-pdf needs TTF/OTF, not woff2) — the on-screen determination matches the prototype exactly; the PDF is a clean legal artefact in brand colours. Storage: a private `evidence` bucket (supabase/storage-setup.sql, applied to hosted only — Supabase-specific, kept out of the PGlite-run migrations) with RLS scoped to business membership by path prefix.
 Approved by: build session (required infrastructure; minimal standard choice).
 
+## 2026-07-09 · P05 · Sole-trader vs limited checklist designed fresh; ICO + H&S added per FR-2.1
+
+The Setup Engine prototype is hardcoded to the limited-company Dave/Liam scenario with NO sole-trader branching and only 7 rows (HMRC, payroll, pension, EL insurance, contract, RTW, records) — it omits the ICO registration and H&S steps that FR-2.1 (P0) requires. Per the fidelity rule, PRD wins on behaviour: the built checklist includes `ico_registration` and `health_safety` steps (styled to the prototype's row pattern), and the sole-trader/limited difference was designed fresh — HMRC and pension guidance differ by type, and a `directorConsideration` flag is set only for limited companies (director on payroll / director auto-enrolment). The "contract blocked until pension complete" dependency is reproduced from the prototype; a "payroll blocked until HMRC in progress" dependency was added (payroll needs the PAYE reference). Golden-tested (`lib/rules/setup/checklist.test.ts`).
+Approved by: build session (PRD behaviour over prototype gap; logged).
+
+## 2026-07-09 · P05 · Config additions: LEL weekly (£123), EL certificate-display penalty (£1,000)
+
+The setup copy surfaces two statutory figures not previously in config: the PAYE Lower Earnings Limit (£123/week, the "must run PAYE above this" threshold) and the ELCI Act s.5 certificate-display penalty (£1,000). Both added to `config_versions.values` (`paye.lel_weekly`, `insurance.el_certificate_display_penalty`), identical in 2026.1/2026.2, and sourced via `getLiveConfig()` in the setup UI (Rule 4). The pension declaration deadline is computed by `lib/rules/setup/deadlines.ts` as duties-start + N months − 1 day (TPR's method), verified against the canonical Liam fixture (2026-08-03 → 2027-01-02) both as a golden and end-to-end.
+Approved by: build session.
+
 ## 2026-07-07 · P01 · shadcn/ui initialised as configuration only
 
 components.json + lib/utils.ts (cn) + tailwindcss-animate are in place so `npx shadcn add` works when a primitive is genuinely needed, but no shadcn components are installed: the system library is bespoke, ported one-to-one from the prototype's own component sources (which the export embeds as JSX). Adding shadcn primitives that would restyle system components is prohibited by Rule 6.

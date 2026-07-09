@@ -27,7 +27,11 @@
         },
         "insurance": {
           "el_min_cover": 5000000,
-          "el_penalty_per_day": 2500
+          "el_penalty_per_day": 2500,
+          "el_certificate_display_penalty": 1000
+        },
+        "paye": {
+          "lel_weekly": 123
         },
         "ssp": {
           "day_one": false
@@ -69,7 +73,11 @@
         },
         "insurance": {
           "el_min_cover": 5000000,
-          "el_penalty_per_day": 2500
+          "el_penalty_per_day": 2500,
+          "el_certificate_display_penalty": 1000
+        },
+        "paye": {
+          "lel_weekly": 123
         },
         "ssp": {
           "day_one": true
