@@ -46,6 +46,31 @@ Approved by: build session (Rule 4 compliance).
 General Sans (500/600/700), Inter (latin + latin-ext variable subsets) and Material Symbols Rounded are served from /public/fonts, extracted byte-for-byte from the woff2 assets bundled inside the Style Reference export — no CDN dependency, PWA-friendly. Material Symbols is the full 3 MB variable font for now; subsetting to the used glyph set is deferred to the performance pass (Prompt 13/16 Lighthouse budgets). App routes only — marketing pages will be budgeted separately.
 Approved by: build session.
 
+## 2026-07-08 · P02 · Local DB verification via PGlite (Docker unavailable)
+
+Docker Desktop cannot start on the dev machine, so the Supabase local stack (`supabase start`) is unavailable. Migrations are authored to Supabase conventions (`supabase/migrations/*.sql`, an `auth`-schema dependency, anon/authenticated/service_role roles) and verified with `@electric-sql/pglite` — real Postgres 16 compiled to WASM, in-process, no Docker. A test-only shim (`supabase/tests/shim.sql`, never applied to real Supabase) reproduces `auth.uid()`, `auth.users`, and the three Supabase roles so the real migrations apply and RLS can be exercised via `SET ROLE authenticated`. Applying these same migrations to a real Supabase project (Prompt 3 / whenever keys are supplied) remains the production path.
+Approved by: build session (Docker blocked; PGlite gives genuine DDL + RLS verification without it).
+
+## 2026-07-08 · P02 · New dev dependencies: vitest + @electric-sql/pglite
+
+The locked stack (CLAUDE.md §4) names no test runner, but §6 mandates golden/adversarial suites under `pnpm gate`. Added **vitest** (test runner) and **@electric-sql/pglite** (in-process Postgres for the migration/RLS harness) as devDependencies only — neither ships in the app bundle. `pnpm gate` now runs `typecheck && lint && test`.
+Approved by: build session (testing infrastructure is required by §6; these are the minimal, standard choices).
+
+## 2026-07-08 · P02 · True immutability enforced by trigger, not RLS alone
+
+CLAUDE.md Rule 5 requires determinations/examinations/rtw_records/events to have "no update, no delete, for any role including service where feasible." RLS with select+insert-only policies blocks `authenticated`, but `service_role` bypasses RLS. So each immutable table also carries a `before update or delete` trigger (`public.forbid_mutation`) that raises for EVERY role including service_role and the table owner. Corrections happen by appending a new row (rtw re-checks link via `supersedes`; documents version-chain). Verified in the PGlite harness (update/delete rejected even as superuser).
+Approved by: build session (strongest available enforcement of the evidence guarantee).
+
+## 2026-07-08 · P02 · Business creation deferred to a SECURITY DEFINER RPC (no authenticated INSERT on businesses)
+
+`businesses` and `business_members` have no `authenticated` INSERT policy: a naive insert would create a business the user then can't see (no membership row) or allow self-adding to arbitrary businesses. Creation will go through a SECURITY DEFINER onboarding function in Prompt 3 that atomically writes the business + owner membership. Seeds use the service role. This is a deliberate security choice, not an omission.
+Approved by: build session.
+
+## 2026-07-08 · P02 · PRD vs CLAUDE.md conflict noted: RTW alert schedule (deferred to Prompt 8)
+
+CLAUDE.md testing-gate 3 says the RTW alert schedule is "60/30/7"; PRD v1.2 FR-4.4 and journey J2 say "90/30/7 days" (90-day pre-expiry follow-up). This is a genuine behaviour conflict (CLAUDE.md vs PRD). It does NOT affect the Prompt 2 schema (obligations store only `due_date`; alert offsets are computed later), so resolution is deferred to Prompt 8 (RTW). Alert schedules are a UX/product choice, deliberately NOT stored in statutory config. Flagging now so it is not lost; founder decision may be needed per CLAUDE.md §9 if it cannot be reconciled (likely: 90/30/7 for RTW re-checks per PRD, 30/14/7/1 for general obligations per FR-5.3).
+Owner: resolve at Prompt 8.
+
 ## 2026-07-07 · P01 · shadcn/ui initialised as configuration only
 
 components.json + lib/utils.ts (cn) + tailwindcss-animate are in place so `npx shadcn add` works when a primitive is genuinely needed, but no shadcn components are installed: the system library is bespoke, ported one-to-one from the prototype's own component sources (which the export embeds as JSX). Adding shadcn primitives that would restyle system components is prohibited by Rule 6.
