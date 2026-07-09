@@ -71,6 +71,11 @@ Approved by: build session.
 CLAUDE.md testing-gate 3 says the RTW alert schedule is "60/30/7"; PRD v1.2 FR-4.4 and journey J2 say "90/30/7 days" (90-day pre-expiry follow-up). This is a genuine behaviour conflict (CLAUDE.md vs PRD). It does NOT affect the Prompt 2 schema (obligations store only `due_date`; alert offsets are computed later), so resolution is deferred to Prompt 8 (RTW). Alert schedules are a UX/product choice, deliberately NOT stored in statutory config. Flagging now so it is not lost; founder decision may be needed per CLAUDE.md §9 if it cannot be reconciled (likely: 90/30/7 for RTW re-checks per PRD, 30/14/7/1 for general obligations per FR-5.3).
 Owner: resolve at Prompt 8.
 
+## 2026-07-09 · P03-prep · Hosted Supabase DDL via Management API over HTTPS
+
+The dev network blocks the raw Postgres port (direct-host DNS lookup hung; only HTTPS egress works — Supabase Management API `/health` returned 200). So migrations/seed are applied to the hosted project through `scripts/db/apply-sql.mjs`, which POSTs SQL to `https://api.supabase.com/v1/projects/{ref}/database/query` using a Personal Access Token in `.env.local` (`SUPABASE_ACCESS_TOKEN`, gitignored). `scripts/db/verify.mjs` sanity-checks schema/seed/RLS via the REST API with the project keys. `pg` is added as a devDependency as a fallback path but is unused while the Postgres port is blocked. The first hosted apply hit a half-committed `public` schema from an earlier partial SQL-editor run; a one-off `drop schema public cascade` reset (kept in scratchpad, not committed) cleared it before re-applying the full bundle. Demo seed's `auth.users` inserts (id,email) succeed via the Management API's superuser role.
+Approved by: build session (only viable automated transport given network egress limits).
+
 ## 2026-07-07 · P01 · shadcn/ui initialised as configuration only
 
 components.json + lib/utils.ts (cn) + tailwindcss-animate are in place so `npx shadcn add` works when a primitive is genuinely needed, but no shadcn components are installed: the system library is bespoke, ported one-to-one from the prototype's own component sources (which the export embeds as JSX). Adding shadcn primitives that would restyle system components is prohibited by Rule 6.
