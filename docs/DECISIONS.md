@@ -76,6 +76,36 @@ Owner: resolve at Prompt 8.
 The dev network blocks the raw Postgres port (direct-host DNS lookup hung; only HTTPS egress works — Supabase Management API `/health` returned 200). So migrations/seed are applied to the hosted project through `scripts/db/apply-sql.mjs`, which POSTs SQL to `https://api.supabase.com/v1/projects/{ref}/database/query` using a Personal Access Token in `.env.local` (`SUPABASE_ACCESS_TOKEN`, gitignored). `scripts/db/verify.mjs` sanity-checks schema/seed/RLS via the REST API with the project keys. `pg` is added as a devDependency as a fallback path but is unused while the Postgres port is blocked. The first hosted apply hit a half-committed `public` schema from an earlier partial SQL-editor run; a one-off `drop schema public cascade` reset (kept in scratchpad, not committed) cleared it before re-applying the full bundle. Demo seed's `auth.users` inserts (id,email) succeed via the Management API's superuser role.
 Approved by: build session (only viable automated transport given network egress limits).
 
+## 2026-07-09 · P03 · Tier price conflict — RESOLVED (canonical £9.99/£14.99/£24.99)
+
+The Onboarding prototype originally hardcoded Starter £7.99 / Launch £14.99 / Growth £29.99, conflicting with CLAUDE.md §1 and PRD §10 (£9.99 / £14.99 / £24.99). **Founder ruling (2026-07-09): canonical set is £9.99 / £14.99 / £24.99** (Launch unchanged); the prototype values are superseded. Actions taken: `lib/pricing.ts` set to canonical; the prototype bundles corrected to match (`scripts` price-repack decoded, replaced, and re-packed the embedded assets in Onboarding, Account & Settings, and Homepage — the three bundles that carried the old literals; Pricing/Cost Calculator were already clean). Employee caps 1/5/15 unchanged; highlighted tier Launch.
+Status: CLOSED — founder ruling applied to both product and prototypes.
+
+## 2026-07-09 · P03 · Already-employer path includes Business Basics (prototype omits it)
+
+The Onboarding prototype's already-employer path goes fork → 6 gap questions → gap report, never collecting a business name/structure. But `businesses.name` is NOT NULL and structure (sole/limited) drives the checklist, so a persisted business requires them. The build inserts the shared Basics step into the already-path (fork → basics → gapq → gapreport). Deviation from prototype flow on a data-necessity basis (PRD/data model wins on behaviour); appearance of Basics itself is unchanged. Already-path still defaults to Starter tier (no tier chooser), matching the prototype's "free Starter checklist" copy.
+Approved by: build session (NOT NULL business name).
+
+## 2026-07-09 · P03 · Auth trust-footer ICO number omitted until registration is live
+
+The prototype AuthScreen shows "ICO registration ZA000000" — a placeholder. Showing a fake ICO number on a compliance product is dishonest, and ICO registration is a launch blocker (CLAUDE.md §8). The build keeps the "encrypted and stored in the UK" trust line but omits the ICO number until the real registration is issued (Prompt 16 launch checklist). Minor copy deviation on honesty grounds.
+Approved by: build session.
+
+## 2026-07-09 · P03 · Supabase dev auth config (site_url + redirect allowlist)
+
+Set the hosted project's auth `site_url` to `http://localhost:3100` and added localhost:3000/3100 (+ `/**`) to the redirect allowlist via the Management API, so magic-link `emailRedirectTo` validates in dev. Production URLs get added at deploy (Prompt 16). Note: the hosted project's built-in email service rate-limits magic-link sends (~3-4/hour) — automated tests verify magic-link wiring by rendering + isolated `signInWithOtp` call, and drive the full flow via the password path (same post-auth flow).
+Approved by: build session.
+
+## 2026-07-09 · P03 · Build convention — tier prices centralised in lib/pricing.ts
+
+Founder-directed. All tier price/cap/copy data lives in a single module, `lib/pricing.ts` (mirrors the prototype's `FE_TIERS`). Every consumer imports from it: `lib/tiers.ts` (gating), the onboarding tier chooser, the marketing pricing page (Prompt 13), and Stripe (Prompt 12). No price literal may appear in a component or any other module — the one place to change a price is `lib/pricing.ts`. `lib/tiers.ts` re-exports the data and adds gating (`employeeCap`, `canAddEmployee`).
+Approved by: founder (in session).
+
+## 2026-07-09 · P03 · Statutory figures in gap-check copy sourced from config (Rule 4)
+
+The gap questionnaire copy in the prototype embeds statutory literals (£5m EL cover, £2,500/day, £45,000 RTW penalty, 3% pension, £400 TPR penalty, 3-yr pay records, 4 weeks' tribunal pay). Rule 4 bars statutory literals outside config, and the grep gate would flag them. So `config_versions.values` gained an `employment_penalties` block (tpr_auto_enrolment_fixed 400, written_statement_tribunal_weeks 4, pay_record_retention_years 3 — identical in 2026.1 and 2026.2, not part of the April uprating); the other figures already existed in config. Gap-question copy is assembled from `getLiveConfig()` in `lib/content/gap-questions.ts`, keeping the prototype's exact wording while sourcing every number from config. `scripts/gen-seed.mjs` now upserts config_versions so edits propagate to the hosted DB.
+Approved by: build session (Rule 4 compliance; prototype copy preserved).
+
 ## 2026-07-07 · P01 · shadcn/ui initialised as configuration only
 
 components.json + lib/utils.ts (cn) + tailwindcss-animate are in place so `npx shadcn add` works when a primitive is genuinely needed, but no shadcn components are installed: the system library is bespoke, ported one-to-one from the prototype's own component sources (which the export embeds as JSX). Adding shadcn primitives that would restyle system components is prohibited by Rule 6.

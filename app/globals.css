@@ -133,6 +133,8 @@
 @keyframes fe-check-draw { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
 @keyframes fe-spin { to { transform: rotate(360deg); } }
 @keyframes fe-pop-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes fe-view-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes fe-ring-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -336,6 +338,16 @@ select.fe-input {
 .fe-alert--warning { background: var(--amber-50); color: var(--ink-900); border-color: rgba(217, 122, 8, 0.3); }
 .fe-alert--success { background: var(--verified-green-50); color: var(--ink-900); }
 .fe-alert--legal-change { background: var(--ink-900); color: var(--bone-50); }
+
+/* ============ App shell (responsive Rail / TabBar) ============ */
+.fe-app-shell { min-height: 100dvh; display: flex; flex-direction: column; }
+.fe-app-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.fe-app-rail { display: none; }
+@media (min-width: 900px) {
+  .fe-app-shell { flex-direction: row; }
+  .fe-app-rail { display: flex; }
+  .fe-app-tabbar { display: none !important; }
+}
 
 /* ============ Progress ============ */
 .fe-progress-track { height: 8px; border-radius: 999px; background: var(--neutral-100); overflow: hidden; }

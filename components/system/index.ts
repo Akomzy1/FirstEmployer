@@ -3,6 +3,7 @@
  * /design/prototype/Style Reference (standalone).html (CLAUDE.md Rule 6).
  * Never restyle ad hoc; screens compose these.
  */
+export { Icon, type IconProps } from "./Icon";
 export { Button, type ButtonProps, type ButtonVariant } from "./actions/Button";
 export {
   DeadlineChip,

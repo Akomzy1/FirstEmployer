@@ -42,7 +42,10 @@ for (const v of versions) {
       v.values,
     )}, ${sqlStr(v.audit_note ?? null)})`,
   );
-  lines.push(`on conflict (label) do nothing;`);
+  // Upsert so re-seeding propagates statutory-config edits to the DB.
+  lines.push(
+    `on conflict (label) do update set effective_from = excluded.effective_from, status = excluded.status, values = excluded.values, audit_note = excluded.audit_note;`,
+  );
   lines.push("");
 }
 

@@ -35,6 +35,11 @@
         "right_to_work": {
           "penalty_first_breach": 45000,
           "penalty_repeat_breach": 60000
+        },
+        "employment_penalties": {
+          "tpr_auto_enrolment_fixed": 400,
+          "written_statement_tribunal_weeks": 4,
+          "pay_record_retention_years": 3
         }
       }
     },
@@ -72,6 +77,11 @@
         "right_to_work": {
           "penalty_first_breach": 45000,
           "penalty_repeat_breach": 60000
+        },
+        "employment_penalties": {
+          "tpr_auto_enrolment_fixed": 400,
+          "written_statement_tribunal_weeks": 4,
+          "pay_record_retention_years": 3
         }
       }
     }

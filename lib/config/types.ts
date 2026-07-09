@@ -32,6 +32,15 @@ export interface StatutoryConfig {
     penalty_first_breach: number;
     penalty_repeat_breach: number;
   };
+  /** Employment-law penalties/thresholds surfaced in guidance and the gap check. */
+  employment_penalties: {
+    /** TPR fixed penalty for auto-enrolment non-compliance. */
+    tpr_auto_enrolment_fixed: number;
+    /** Tribunal award (weeks' pay) for a missing written statement. */
+    written_statement_tribunal_weeks: number;
+    /** Statutory pay-record retention (WTR/PAYE), in years. */
+    pay_record_retention_years: number;
+  };
 }
 
 export type ConfigStatus = "draft" | "scheduled" | "live" | "superseded";
