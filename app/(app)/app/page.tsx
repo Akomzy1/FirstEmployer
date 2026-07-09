@@ -39,7 +39,7 @@ export default async function JourneyHomePage() {
       note: hasDetermination
         ? "You've checked your new hire's employment status."
         : "Check whether your new hire is an employee, a worker, or self-employed.",
-      route: null,
+      route: "/app/status-advisor",
     },
     {
       id: "setup",
