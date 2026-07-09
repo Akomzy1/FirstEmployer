@@ -131,6 +131,31 @@ Approved by: build session (PRD behaviour over prototype gap; logged).
 The setup copy surfaces two statutory figures not previously in config: the PAYE Lower Earnings Limit (£123/week, the "must run PAYE above this" threshold) and the ELCI Act s.5 certificate-display penalty (£1,000). Both added to `config_versions.values` (`paye.lel_weekly`, `insurance.el_certificate_display_penalty`), identical in 2026.1/2026.2, and sourced via `getLiveConfig()` in the setup UI (Rule 4). The pension declaration deadline is computed by `lib/rules/setup/deadlines.ts` as duties-start + N months − 1 day (TPR's method), verified against the canonical Liam fixture (2026-08-03 → 2027-01-02) both as a golden and end-to-end.
 Approved by: build session.
 
+## 2026-07-09 · P06 · New dependency: @anthropic-ai/sdk (the locked "Claude API")
+
+CLAUDE.md §4 locks "Claude API `claude-sonnet-4-6`" but names no client library. Added **@anthropic-ai/sdk** (runtime dependency) as the standard client for the Document Generator (and, in P07, the Examiner). The model id is centralised in `lib/ai/models.ts` (`GENERATION_MODEL`/`EXAMINATION_MODEL` = `claude-sonnet-4-6`, temperature 0) so it changes in one place. The generator dynamically imports the SDK and only when `ANTHROPIC_API_KEY` is set — so builds, tests, and dev without a key never touch the network.
+Approved by: build session (required infrastructure for the AI edges; the locked model id is unchanged).
+
+## 2026-07-09 · P06 · Generator fails SAFE to the solicitor template, not closed
+
+CLAUDE.md Rule 2 "fail closed" governs the EXAMINER (no document reaches a user without an examiner PASS). The generator is different: the clause library render (`lib/templates/contract/render.ts`) is itself solicitor-owned, config-compliant legal text, so when the Claude transport is absent or errors, `generateContract` returns the template-rendered contract (marked `source:"template"`) rather than failing. This is safe because the Examiner still gates every document regardless of how it was drafted — nothing is delivered unexamined. Claude, when available, only re-expresses the authoritative clause bodies in plainer English at temperature 0; it is structurally prevented from adding, dropping, or renumbering clauses or altering statutory figures (the generator merges only clause `body` onto the fixed baseline).
+Approved by: build session (Rule 2 is examiner-scoped; generator degradation is safe by construction).
+
+## 2026-07-09 · P06 · Examiner interface + stub now; real examiner is P07
+
+Per Build Prompt 6 ("stub the interface now: examine(document): ExaminationResult"), P06 ships the stable `Examine` contract (`lib/ai/examiner-types.ts`) and a stub (`lib/ai/examiner-stub.ts`), plus the 13-check spine (`lib/rules/examiner-checklist.ts`, without evaluators — P07 attaches them). Independence is enforced by construction: the examiner interface imports no generator internals; it receives only the finished artefact, the questionnaire facts, and live config. The stub runs the GENUINE deterministic checks (pay floor, holiday, parties, dates, presence of particulars) so a truly defective contract really fails, and simulates the language-level checks from a `directive` (approve | fix | human) so all three prototype paths are reproducible and pipeline-tested. P07 replaces the language simulation with the real temp-0 LLM examiner and keeps the deterministic checks + this interface.
+Approved by: build session (Prompt 6 explicitly defers the examiner to Prompt 7).
+
+## 2026-07-09 · P06 · Pay-floor + holiday validators live in /lib/rules/contract (deterministic core)
+
+The contract questionnaire's live "meets the floor" validation (FR-3.3) is pure rules code, not UI logic: `lib/rules/contract/pay-floor.ts` (wage-band derivation + `checkPayFloor`) and `holiday.ts` (`checkHolidayFloor`). This is deliberate — the SAME functions back the Examiner's deterministic checks #3/#6 (P07) and the April uprating re-check (P09), so there is one source of truth for "is this legal?". Golden-tested (16 cases), including the Liam gotcha (a 27-year-old first-year apprentice is compared against the apprentice band, not the 21+ NLW) and a 1p-shortfall failure. The client never sees a statutory figure: the server page derives the floor from config and passes the number + assembled receipt copy as props (Rule 4), mirroring the P03 gap-questions pattern.
+Approved by: build session.
+
+## 2026-07-09 · P06 · Prototype demo chrome (device/screen/outcome switchers) not reproduced in the app
+
+The Document Generator export is a standalone demo with device (mobile/desktop), screen, and "Examiner result" (first-pass/fix/human) switchers, and a "Skip the wait" affordance. These are prototype scaffolding, not product: the real screen renders inside the app shell (`fe-app-main`), and the examiner outcome comes from the pipeline, not a user toggle. The generation progress screen still plays the prototype's staged reveal (drafting → examining ticks → fixing/re-examining → approved/human), but driven by the REAL `runGeneration` result. A P06-only `demoOutcome` field on the server action lets a developer force the fix/human paths against the stub examiner; it is ignored once P07's real examiner lands. SSP weekly amount (the prototype's "£118.75/week") is referenced by name only, not by figure — it is a statutory rate not yet in config, and inventing it is barred (Rule 4 + "never invent statutory content"); a `// LEGAL-REVIEW` flag marks where the config value belongs.
+Approved by: build session (prototype wins on appearance; these are demo-harness elements with no product counterpart).
+
 ## 2026-07-07 · P01 · shadcn/ui initialised as configuration only
 
 components.json + lib/utils.ts (cn) + tailwindcss-animate are in place so `npx shadcn add` works when a primitive is genuinely needed, but no shadcn components are installed: the system library is bespoke, ported one-to-one from the prototype's own component sources (which the export embeds as JSX). Adding shadcn primitives that would restyle system components is prohibited by Rule 6.
