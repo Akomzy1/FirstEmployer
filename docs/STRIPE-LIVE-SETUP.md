@@ -65,11 +65,11 @@ Paste this block into `.env.local` AND into Vercel (Production environment),
 filling in the real values:
 
 ```
-STRIPE_SECRET_KEY=sk_live_XXXXXXXXXXXXXXXXXXXXXXXX
-STRIPE_WEBHOOK_SECRET=whsec_XXXXXXXXXXXXXXXXXXXXXXXX
-STRIPE_PRICE_STARTER=price_XXXXXXXXXXXXXXXXXXXXXXXX
-STRIPE_PRICE_LAUNCH=price_XXXXXXXXXXXXXXXXXXXXXXXX
-STRIPE_PRICE_GROWTH=price_XXXXXXXXXXXXXXXXXXXXXXXX
+STRIPE_SECRET_KEY=sk_live_<paste-your-key>
+STRIPE_WEBHOOK_SECRET=whsec_<paste-your-secret>
+STRIPE_PRICE_STARTER=price_<paste-the-id>
+STRIPE_PRICE_LAUNCH=price_<paste-the-id>
+STRIPE_PRICE_GROWTH=price_<paste-the-id>
 ```
 
 Also required for checkout redirects (part of launch blocker #5):
