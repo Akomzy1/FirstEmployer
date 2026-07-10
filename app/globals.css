@@ -364,3 +364,10 @@ select.fe-input {
   .fe-doc-nav { display: block; }
   .fe-doc-jump { display: none; }
 }
+
+/* Assistant chat — typing indicator + starter hover (from the Assistant export). */
+@keyframes ast-typing {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+.fe-starter:hover { border-color: var(--neutral-400); }
