@@ -1,6 +1,9 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  // React-PDF documents (.tsx) under test use JSX; Next handles this in the app,
+  // esbuild needs the automatic runtime here.
+  esbuild: { jsx: "automatic" },
   test: {
     include: ["**/*.test.ts"],
     exclude: ["node_modules/**", ".next/**"],

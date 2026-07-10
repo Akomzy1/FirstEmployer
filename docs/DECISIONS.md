@@ -211,6 +211,21 @@ Approved by: build session.
 At the founder's request, the Anthropic `frontend-design` skill was installed to `~/.claude/skills/frontend-design` (user level, deliberately NOT in the repo's committed `.claude/skills/`). Standing constraint recorded: that skill's brief ("distinctive, opinionated, take an aesthetic risk") is subordinate to CLAUDE.md Rule 6 on this project — FirstEmployer screens are extracted from the prototype exports, never invented. The skill may inform NO-PROTOTYPE screens and future projects only.
 Approved by: founder (in session).
 
+## 2026-07-10 · P10 · New dependency: pdf-lib (audit-pack bundle merging)
+
+The audit pack is "a single indexed PDF bundle (cover page … then artefacts in order)". @react-pdf/renderer renders documents but cannot merge existing PDFs or embed stored evidence images into a bundle. Added **pdf-lib** (runtime dependency, zero transitive deps) for the merge: the cover + index render via react-pdf, artefact PDFs are appended as-is, clause-JSON documents are rendered at export time, and evidence images are embedded on A4 pages. Page numbering is two-pass — artefacts load first so the index carries each item's TRUE start page, re-rendered once if the index itself spills pages. The assembler is server-agnostic with an injected downloader (the examiner-core pattern), so `lib/documents/audit-pack.test.ts` proves offline that the bundle parses and its page arithmetic holds. Artefacts with no stored file are skipped and HONESTLY counted (surfaced in the ready screen), never silently dropped.
+Approved by: build session (required for the mandated bundle format; minimal standard choice).
+
+## 2026-07-10 · P10 · Scope rules by artefact kind + tags, not prototype ids; HMRC excludes RTW and the EL certificate
+
+The prototype's presets are hardcoded demo-artefact id lists. The build derives the rules they encode (`lib/rules/audit-pack.ts`): HMRC = determinations + contracts + PAYE/pension certificates + pension/variation letters — never RTW records (immigration data has no place in a tax pack) and not the EL certificate (HSE's domain); Home Office = RTW records + determinations; TPR = pension artefacts + contracts; Everything = all. Goldens reproduce the prototype's exact membership over an equivalent fixture set, including the two release assertions (HMRC excludes RTW / Home Office includes it). Packs are chronological oldest-first — how an inspector reads a file.
+Approved by: build session (rules derived from the prototype's data; goldens pin them).
+
+## 2026-07-10 · P10 · Vault surfaces only approved chain heads; determinations carry no seal
+
+The vault view model (`lib/data/vault.ts`) lists only documents with status `approved` (fail closed: an examining/human_review draft never surfaces as evidence) and only version-chain HEADS — superseded versions render inside the detail's version-history timeline (walked via `supersedes`, newest first, "Current"/"Superseded" states with each version's own seal hash), which satisfies the prompt's "version history timeline on document detail" via the vault detail screen. Determinations appear WITHOUT a VerificationSeal — they are calculated, not examined (consistent with the P04 decision); their history notes the rules-engine version instead. The vault detail's RTW follow-up copy uses 90/30/7 per the P08 resolution (the vault prototype still said "60, 30 and 7"). Retention-note periods that exist in config are sourced from it; the RTW "+2 years" mirrors the `rtw_employment_plus_2y` retention class (data-model semantics). The More screen gained a NO-PROTOTYPE interim page (vault + RTW entries live, P12 rows visibly "coming soon") since the app shell has no vault tab.
+Approved by: build session.
+
 ## 2026-07-07 · P01 · shadcn/ui initialised as configuration only
 
 components.json + lib/utils.ts (cn) + tailwindcss-animate are in place so `npx shadcn add` works when a primitive is genuinely needed, but no shadcn components are installed: the system library is bespoke, ported one-to-one from the prototype's own component sources (which the export embeds as JSX). Adding shadcn primitives that would restyle system components is prohibited by Rule 6.
