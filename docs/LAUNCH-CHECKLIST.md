@@ -12,7 +12,7 @@ marked NOT DONE where true** — nothing here is aspirational (CLAUDE.md §8).
 | 3 | **DPIA** | ❌ NOT DONE — pending PRD Open Question 7 (controller vs processor for employee personal data) | Founder + solicitor |
 | 4 | **Stripe live keys + products** | 🟡 NEARLY DONE (2026-07-10) — live secret key, webhook signing secret, and all three price IDs in `.env.local`; the three live prices verified against the Stripe API (£9.99/£14.99/£24.99 GBP monthly, active, no Stripe-side trial — exact match to `lib/pricing.ts`); webhook endpoint registered for `https://firstemployer.co.uk/api/stripe/webhook`. Remaining: copy the five `STRIPE_*` vars to Vercel env, then the live checkout + cancel pass after deploy (guide step 6) | Founder + deploy |
 | 5 | **Production domain + SSL + `NEXT_PUBLIC_APP_URL`** | 🟡 IN PROGRESS — domain secured 2026-07-10: **firstemployer.co.uk** (canonical apex; www redirects). Remaining: add both domains to the Vercel project (SSL is automatic) and set `NEXT_PUBLIC_APP_URL=https://firstemployer.co.uk` in Vercel env | Founder (Vercel) |
-| 6 | **Support inbox** (hello@firstemployer.co.uk is referenced in UI) | ❌ NOT DONE | Founder |
+| 6 | **Support inbox** | 🟡 NEARLY DONE — address confirmed 2026-07-10: **support@firstemployer.co.uk**, wired everywhere via the single `SUPPORT_EMAIL` constant (`lib/marketing/entity.ts`): footer Contact link + Resend sender for the readiness email. Remaining: create the actual mailbox at the email provider, and verify firstemployer.co.uk as a sending domain in Resend (SPF/DKIM DNS records) so the readiness email delivers | Founder |
 
 ## Deploy-time verification (built and unit-tested; needs a served deploy or device)
 

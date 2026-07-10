@@ -12,3 +12,7 @@ export const SITE_NAME = "FirstEmployer";
 /** ICO data-protection registration (issued 2026-07-10; was "in progress" until
  *  then — DECISIONS P03). One source of truth for every surface that shows it. */
 export const ICO_REGISTRATION = "ZC160686";
+
+/** Support inbox (founder-confirmed 2026-07-10; launch blocker 6). One source of
+ *  truth for every mailto link and outbound email sender. */
+export const SUPPORT_EMAIL = "support@firstemployer.co.uk";

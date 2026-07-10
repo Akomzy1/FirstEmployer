@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { SUPPORT_EMAIL } from "@/lib/marketing/entity";
 
 /**
  * Readiness-check email gate (FR-8.2): store the lead, and send the results
@@ -30,7 +31,7 @@ export async function captureReadinessLead(input: {
         method: "POST",
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          from: "FirstEmployer <hello@firstemployer.co.uk>",
+          from: `FirstEmployer <${SUPPORT_EMAIL}>`,
           to: [email],
           subject: "Your hiring readiness results",
           text:

@@ -2,7 +2,7 @@
  * wired to real routes; the footer carries the canonical entity descriptor and
  * the real ICO registration (issued 2026-07-10). */
 import Link from "next/link";
-import { ENTITY_DESCRIPTOR, ICO_REGISTRATION } from "@/lib/marketing/entity";
+import { ENTITY_DESCRIPTOR, ICO_REGISTRATION, SUPPORT_EMAIL } from "@/lib/marketing/entity";
 
 export function MarketingNav() {
   return (
@@ -56,7 +56,7 @@ export function MarketingFooter({ configLabel }: { configLabel: string }) {
               <li><Link href="/about">About</Link></li>
               <li><Link href="/trust">Trust &amp; security</Link></li>
               <li><Link href="/guides">Guides</Link></li>
-              <li><a href="mailto:hello@firstemployer.co.uk">Contact</a></li>
+              <li><a href={`mailto:${SUPPORT_EMAIL}`}>Contact</a></li>
             </ul>
           </div>
           <div className="foot__news">
