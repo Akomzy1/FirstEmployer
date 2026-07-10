@@ -26,6 +26,10 @@ export interface DocumentStore {
     businessId: string;
     employeeId: string;
     questionnaire: Record<string, unknown>;
+    /** Document type; defaults to employment_contract. */
+    type?: "employment_contract" | "variation_letter";
+    /** Prior document this one supersedes (variation letters chain versions). */
+    supersedes?: string | null;
   }): Promise<{ id: string; version: number }>;
   setStatus(documentId: string, status: "examining" | "approved" | "human_review"): Promise<void>;
   /** Persist the artefact; returns its stored path. */
@@ -58,6 +62,10 @@ export interface RunGenerationInput {
   examine: Examine;
   store: DocumentStore;
   maxAttempts?: number;
+  /** Document type; defaults to employment_contract. */
+  documentType?: "employment_contract" | "variation_letter";
+  /** Prior document the new one supersedes on approval (version chain). */
+  supersedes?: string | null;
 }
 
 /** How generation ended — drives the progress screen's terminal state. */
@@ -81,6 +89,8 @@ export async function runGeneration(input: RunGenerationInput): Promise<RunGener
     businessId: input.businessId,
     employeeId: input.employeeId,
     questionnaire: input.questionnaire,
+    type: input.documentType,
+    supersedes: input.supersedes,
   });
   await store.setStatus(doc.id, "examining");
 

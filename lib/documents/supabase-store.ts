@@ -34,15 +34,16 @@ export function createSupabaseDocumentStore(deps: SupabaseStoreDeps): DocumentSt
   };
 
   return {
-    async createDocument({ questionnaire }) {
+    async createDocument({ questionnaire, type, supersedes }) {
       const { data, error } = await db
         .from("documents")
         .insert({
           business_id: businessId,
           employee_id: employeeId,
-          type: "employment_contract",
+          type: type ?? "employment_contract",
           status: "draft",
           version: 1,
+          supersedes: supersedes ?? null,
           questionnaire,
         })
         .select("id, version")
@@ -54,6 +55,14 @@ export function createSupabaseDocumentStore(deps: SupabaseStoreDeps): DocumentSt
     async setStatus(documentId, status) {
       const { error } = await db.from("documents").update({ status }).eq("id", documentId);
       if (error) throw new Error(`set document status failed: ${error.message}`);
+      // The version chain advances ONLY on approval (fail closed): a variation
+      // letter that never passes the examiner must not retire the old statement.
+      if (status === "approved") {
+        const { data: doc } = await db.from("documents").select("supersedes").eq("id", documentId).maybeSingle();
+        if (doc?.supersedes) {
+          await db.from("documents").update({ status: "superseded" }).eq("id", doc.supersedes);
+        }
+      }
     },
 
     async saveContent(documentId, version, contract) {
