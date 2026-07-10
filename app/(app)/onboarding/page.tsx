@@ -8,7 +8,7 @@ import type { OnboardingDraft } from "./actions";
 
 export const metadata = { title: "Get set up" };
 
-export default async function OnboardingPage() {
+export default async function OnboardingPage({ searchParams }: { searchParams?: { gaps?: string } }) {
   const supabase = createClient();
   const {
     data: { user },
@@ -26,6 +26,16 @@ export default async function OnboardingPage() {
     .maybeSingle();
 
   const draft = (profile?.onboarding_state ?? {}) as OnboardingDraft;
+
+  // Readiness-check handoff (FR-8.2): ?gaps=rtw,paye pre-answers those gap
+  // questions "no", so the already-employer path seeds the matching obligations.
+  const gapsParam = typeof searchParams?.gaps === "string" ? searchParams.gaps : "";
+  if (gapsParam && !draft.gapAnswers) {
+    const valid = new Set(["insurance", "paye", "contract", "rtw", "pension", "records"]);
+    const gapAnswers: Record<string, "yes" | "no"> = {};
+    for (const id of gapsParam.split(",")) if (valid.has(id.trim())) gapAnswers[id.trim()] = "no";
+    if (Object.keys(gapAnswers).length) draft.gapAnswers = gapAnswers;
+  }
 
   // Gap-question copy assembled from live config (Rule 4) on the server, then
   // handed to the client flow so it never imports config directly.

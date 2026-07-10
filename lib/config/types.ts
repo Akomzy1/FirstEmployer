@@ -27,6 +27,13 @@ export interface StatutoryConfig {
     /** Penalty for failing to display/produce the EL certificate (ELCI Act s.5). */
     el_certificate_display_penalty: number;
   };
+  /** Employer National Insurance (cost-calculator inputs). */
+  ni: {
+    employer_rate_pct: number;
+    secondary_threshold_annual: number;
+    /** Employment Allowance — offsets employer NI for eligible small employers. */
+    employment_allowance: number;
+  };
   paye: {
     /** Lower Earnings Limit — pay above this per week triggers PAYE/NI reporting. */
     lel_weekly: number;

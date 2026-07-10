@@ -9,7 +9,7 @@
       "values": {
         "minimum_wage": {
           "nlw_21_plus": 12.21,
-          "nmw_18_20": 10.0,
+          "nmw_18_20": 10,
           "nmw_16_17": 7.55,
           "apprentice": 7.55
         },
@@ -44,6 +44,11 @@
           "tpr_auto_enrolment_fixed": 400,
           "written_statement_tribunal_weeks": 4,
           "pay_record_retention_years": 3
+        },
+        "ni": {
+          "employer_rate_pct": 15,
+          "secondary_threshold_annual": 5000,
+          "employment_allowance": 10500
         }
       }
     },
@@ -56,8 +61,8 @@
         "minimum_wage": {
           "nlw_21_plus": 12.71,
           "nmw_18_20": 10.85,
-          "nmw_16_17": 8.0,
-          "apprentice": 8.0
+          "nmw_16_17": 8,
+          "apprentice": 8
         },
         "holiday": {
           "statutory_weeks": 5.6,
@@ -90,6 +95,11 @@
           "tpr_auto_enrolment_fixed": 400,
           "written_statement_tribunal_weeks": 4,
           "pay_record_retention_years": 3
+        },
+        "ni": {
+          "employer_rate_pct": 15,
+          "secondary_threshold_annual": 5000,
+          "employment_allowance": 10500
         }
       }
     }
