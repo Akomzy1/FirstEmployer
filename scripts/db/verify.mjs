@@ -63,7 +63,7 @@ check("0013: monitor_findings table exists", !monitor.error, monitor.error?.mess
 // Function probes: call with values that trip the function's own guards —
 // proves the function exists without mutating anything.
 const NIL = "00000000-0000-0000-0000-000000000000";
-const del = await svc.rpc("delete_account_with_retention", { p_user_id: NIL });
+const del = await svc.rpc("delete_account_with_retention", { p_business_id: NIL });
 check("0011: delete_account_with_retention exists (guard fired)",
   del.error != null && !/could not find|does not exist|schema cache/i.test(del.error.message),
   del.error?.message ?? "no error — unexpected");

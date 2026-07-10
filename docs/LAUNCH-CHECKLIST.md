@@ -19,9 +19,11 @@ marked NOT DONE where true** — nothing here is aspirational (CLAUDE.md §8).
 - [x] Apply migrations to hosted Supabase — **complete (founder, 2026-07-10)**: base schema
       0001–0010 + seed at P03, and the post-P03 bundle (0011–0013 + refreshed seed with the
       `ni` config block) via `supabase/pending-migrations-bundle.sql` in the SQL editor.
-- [ ] Run `node scripts/db/verify.mjs` once with `.env.local` present — should show every
-      check PASS including the `0011`/`0012`/`0013` and `ni block` lines. (Last unrun step
-      of the schema story; two minutes.)
+- [x] Run `node scripts/db/verify.mjs` — **ALL CHECKS PASS (2026-07-10)**: base schema,
+      both config versions + `ni` block, canonical demo tenants, 0011–0013 objects and both
+      functions, RLS from anon. (The pending bundle had only partially applied; re-applied
+      idempotently via `scripts/db/apply-sql.mjs` + Management API token.) Known WARN:
+      20 non-canonical businesses from P03 e2e runs — harmless residue, cleanup optional.
 - [ ] Set env: Supabase keys, `ANTHROPIC_API_KEY`, Stripe keys + price ids, `RESEND_API_KEY`, `JOBS_SECRET`, `ADMIN_EMAILS`, `NEXT_PUBLIC_APP_URL`
 - [ ] Stripe webhook endpoint (`/api/stripe/webhook`) registered with the live signing secret
 - [ ] Cron: `POST /api/jobs/uprating` (Bearer `JOBS_SECRET`) scheduled nightly — the J4 overnight re-check
