@@ -21,10 +21,9 @@ export default async function MorePage() {
   }
   const initials = business.name.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
-  const soon = [
-    { icon: "business", label: "Business details" },
-    { icon: "credit_card", label: "Subscription" },
-    { icon: "settings", label: "Settings & privacy" },
+  const live = [
+    { icon: "credit_card", label: "Account & plan", href: "/app/account" },
+    { icon: "settings", label: "Settings & privacy", href: "/app/settings" },
   ];
 
   return (
@@ -52,12 +51,12 @@ export default async function MorePage() {
             <span style={{ flex: 1, font: "500 16px/1.2 var(--font-body)", color: "var(--ink-900)" }}>Right to work</span>
             <Icon name="chevron_right" size={20} style={{ color: "var(--neutral-400)", flex: "none" }} />
           </Link>
-          {soon.map((r, i) => (
-            <div key={r.label} style={{ display: "flex", alignItems: "center", gap: 13, padding: "15px 18px", borderBottom: i < soon.length - 1 ? "1px solid var(--border-hairline)" : "none", opacity: 0.55 }}>
+          {live.map((r, i) => (
+            <Link key={r.label} href={r.href} style={{ display: "flex", alignItems: "center", gap: 13, padding: "15px 18px", width: "100%", borderBottom: i < live.length - 1 ? "1px solid var(--border-hairline)" : "none", textDecoration: "none", boxSizing: "border-box" }}>
               <Icon name={r.icon} size={22} style={{ color: "var(--neutral-500)", flex: "none" }} />
               <span style={{ flex: 1, font: "500 16px/1.2 var(--font-body)", color: "var(--ink-900)" }}>{r.label}</span>
-              <span style={{ font: "600 11px/1 var(--font-body)", letterSpacing: "0.05em", color: "var(--amber-700)", background: "var(--amber-50)", border: "1px solid rgba(217,122,8,0.3)", borderRadius: 999, padding: "4px 8px" }}>Coming soon</span>
-            </div>
+              <Icon name="chevron_right" size={20} style={{ color: "var(--neutral-400)", flex: "none" }} />
+            </Link>
           ))}
         </div>
 

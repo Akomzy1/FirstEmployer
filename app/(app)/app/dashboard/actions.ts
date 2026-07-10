@@ -10,6 +10,7 @@ import { createSupabaseDocumentStore } from "@/lib/documents/supabase-store";
 import { renderVariationLetter } from "@/lib/templates/contract/variation";
 import { checkPayFloor } from "@/lib/rules/contract/pay-floor";
 import type { ContractFacts } from "@/lib/templates/contract/types";
+import { assertCanGenerate, type TierId } from "@/lib/tiers";
 
 export interface VariationResult {
   documentId: string;
@@ -29,6 +30,9 @@ export async function generateVariationLetter(employeeId: string): Promise<Varia
   if (!user) throw new Error("not authenticated");
   const business = await getCurrentBusiness();
   if (!business) throw new Error("no business");
+
+  // Variation letters run the generation pipeline — same gate as contracts.
+  assertCanGenerate({ tier: business.tier as TierId, subscription_state: business.subscription_state, trial_ends_at: business.trial_ends_at });
 
   const { data: employee } = await supabase
     .from("employees")

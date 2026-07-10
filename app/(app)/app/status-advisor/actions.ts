@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { getCurrentBusiness } from "@/lib/data/business";
 import { determineStatus, VERDICT_LABEL, type StatusAnswers } from "@/lib/rules/status";
 import { renderDeterminationPdf } from "@/lib/pdf/determination";
+import { assertCanAddEmployee, type TierId } from "@/lib/tiers";
 
 interface StatusDraft {
   employeeId?: string;
@@ -28,6 +29,17 @@ async function loadContext() {
 /** Create the prospective hire being assessed, and open the draft. */
 export async function startStatusAdvisor(name: string): Promise<{ employeeId: string }> {
   const { supabase, business } = await loadContext();
+
+  // Tier gate (server-side, single module — CLAUDE.md working rules).
+  const { count } = await supabase
+    .from("employees")
+    .select("id", { count: "exact", head: true })
+    .eq("business_id", business.id);
+  assertCanAddEmployee(
+    { tier: business.tier as TierId, subscription_state: business.subscription_state, trial_ends_at: business.trial_ends_at },
+    count ?? 0,
+  );
+
   const { data: emp, error } = await supabase
     .from("employees")
     .insert({ business_id: business.id, full_name: name.trim(), status: "prospective" })

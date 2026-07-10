@@ -171,3 +171,58 @@ describe("immutability of evidence tables", () => {
     await expect(db.query(`update events set action = 'tampered';`)).rejects.toThrow(/immutable/i);
   });
 });
+
+describe("account deletion honours statutory retention (P12)", () => {
+  it("purges standard evidence + threads, keeps RTW/holiday-pay records, anonymises the owner", async () => {
+    await asSuperuser();
+    // Seed: one evidence row per retention class + an assistant thread + an obligation.
+    await db.exec(`
+      insert into evidence (business_id, type, file_path, retention_class) values
+        ('${ID.doPlumbing}', 'misc_upload',  '${ID.doPlumbing}/misc/a.pdf',    'standard'),
+        ('${ID.doPlumbing}', 'rtw_record',   '${ID.doPlumbing}/rtw/r.pdf',     'rtw_employment_plus_2y'),
+        ('${ID.doPlumbing}', 'holiday_log',  '${ID.doPlumbing}/pay/h.pdf',     'holiday_pay_6y');
+      insert into assistant_threads (id, business_id, title)
+        values ('00000000-0000-4000-8000-0000000000f1', '${ID.doPlumbing}', 'test thread');
+      insert into assistant_messages (thread_id, role, content)
+        values ('00000000-0000-4000-8000-0000000000f1', 'user', 'hello');
+      insert into obligations (business_id, type, state) values ('${ID.doPlumbing}', 'record_keeping', 'complete');
+    `);
+
+    // Run the deletion as the account owner (RPC path).
+    await asUser(ID.daveUser);
+    const purged = await db.query<{ paths: string[] }>(
+      `select public.delete_account_with_retention('${ID.doPlumbing}') as paths;`,
+    );
+    // The caller gets back exactly the standard-retention file paths to purge from storage.
+    expect(purged.rows[0].paths).toEqual([`${ID.doPlumbing}/misc/a.pdf`]);
+
+    await asSuperuser();
+    const evidence = await db.query<{ retention_class: string }>(
+      `select retention_class::text from evidence where business_id = '${ID.doPlumbing}' order by retention_class;`,
+    );
+    // RTW + holiday-pay records survive; the standard row is gone.
+    expect(evidence.rows.map((r) => r.retention_class)).toEqual(["holiday_pay_6y", "rtw_employment_plus_2y"]);
+
+    const threads = await db.query<{ n: number }>(
+      `select count(*)::int as n from assistant_threads where business_id = '${ID.doPlumbing}';`,
+    );
+    expect(threads.rows[0].n).toBe(0);
+
+    const owner = await db.query<{ full_name: string }>(
+      `select full_name from profiles where id = '${ID.daveUser}';`,
+    );
+    expect(owner.rows[0].full_name).toBe("Deleted user");
+
+    const biz = await db.query<{ subscription_state: string }>(
+      `select subscription_state::text from businesses where id = '${ID.doPlumbing}';`,
+    );
+    expect(biz.rows[0].subscription_state).toBe("canceled");
+  });
+
+  it("a non-member cannot run the deletion", async () => {
+    await asUser(ID.sarahUser);
+    await expect(
+      db.query(`select public.delete_account_with_retention('${ID.doPlumbing}');`),
+    ).rejects.toThrow(/not a member/i);
+  });
+});

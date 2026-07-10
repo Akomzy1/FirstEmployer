@@ -15,8 +15,11 @@ export interface TierDef {
   name: string;
   /** Monthly price in GBP (commercial value, not statutory). */
   price: string;
-  /** Maximum employee records. */
+  /** Maximum employee records (PRD §10: 3 / 5 / 15). */
   cap: number;
+  /** Whether the tier includes the generation journey (setup + contracts).
+   *  PRD §10: Starter is monitoring-only — "no setup journey, no generation". */
+  generation: boolean;
   highlight?: boolean;
   tagline: string;
   for: string;
@@ -28,13 +31,14 @@ export const TIERS: TierDef[] = [
     id: "starter",
     name: "Starter",
     price: "9.99",
-    cap: 1,
-    tagline: "Stay compliant with one employee",
-    for: "You already have one member of staff and want to keep everything in order.",
+    cap: 3,
+    generation: false,
+    tagline: "Stay compliant with the staff you have",
+    for: "You already have staff and want to keep everything in order.",
     features: [
       "Live compliance dashboard",
       "Deadline reminders",
-      "1 employee record",
+      "Up to 3 employees",
       "Assistant, with legal receipts",
     ],
   },
@@ -43,6 +47,7 @@ export const TIERS: TierDef[] = [
     name: "Launch",
     price: "14.99",
     cap: 5,
+    generation: true,
     highlight: true,
     tagline: "Everything to hire, done properly",
     for: "You're hiring for the first time, or growing a small team.",
@@ -59,6 +64,7 @@ export const TIERS: TierDef[] = [
     name: "Growth",
     price: "24.99",
     cap: 15,
+    generation: true,
     tagline: "For a growing team",
     for: "You're building a team and want room to grow.",
     features: [

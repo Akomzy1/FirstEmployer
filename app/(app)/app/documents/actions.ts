@@ -8,6 +8,7 @@ import { getLiveConfig } from "@/lib/config";
 import { generateContract } from "@/lib/ai/generator";
 import { makeExaminer } from "@/lib/ai/examiner";
 import { runGeneration } from "@/lib/documents/pipeline";
+import { assertCanGenerate, type TierId } from "@/lib/tiers";
 import { createSupabaseDocumentStore } from "@/lib/documents/supabase-store";
 import type { ContractFacts } from "@/lib/templates/contract/types";
 import type { ExamCheckView, GenerationResultView } from "@/lib/documents/view";
@@ -87,6 +88,11 @@ export async function saveContractDraft(patch: Partial<ContractForm>): Promise<v
  */
 export async function generateContractAction(form: ContractForm): Promise<GenerationResultView> {
   const { supabase, user, business, employee } = await loadContext();
+
+  // Generation gate: tier must include the journey and the subscription must be
+  // live (lapsed accounts are read-only — documents stay downloadable).
+  assertCanGenerate({ tier: business.tier as TierId, subscription_state: business.subscription_state, trial_ends_at: business.trial_ends_at });
+
   const config = await getLiveConfig();
   const facts = buildFacts(business, employee, form);
 
