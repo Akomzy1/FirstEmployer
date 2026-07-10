@@ -16,7 +16,14 @@ marked NOT DONE where true** — nothing here is aspirational (CLAUDE.md §8).
 
 ## Deploy-time verification (built and unit-tested; needs a served deploy or device)
 
-- [ ] Apply migrations 0001–0013 + `storage-setup.sql` to production Supabase; run `scripts/db/verify.mjs`
+- [x] Apply migrations to production Supabase — **founder confirms applied (2026-07-10)**.
+      ⚠️ Verify the POST-P03 objects specifically: migrations **0011–0013** (Stripe columns,
+      deletion function, marketing_leads, feedback, monitor_findings, publish function) and
+      the updated config seed (`ni` block) landed after the original apply.
+      One command checks everything: `node scripts/db/verify.mjs` (needs `.env.local` with the
+      project URL + anon/service keys). If any 0011–0013 check fails, apply the missing files
+      with `node scripts/db/apply-sql.mjs supabase/migrations/0011_billing_and_deletion.sql`
+      (then 0012, 0013) and re-run `node scripts/gen-seed.mjs` + apply `supabase/seed.sql`.
 - [ ] Set env: Supabase keys, `ANTHROPIC_API_KEY`, Stripe keys + price ids, `RESEND_API_KEY`, `JOBS_SECRET`, `ADMIN_EMAILS`, `NEXT_PUBLIC_APP_URL`
 - [ ] Stripe webhook endpoint (`/api/stripe/webhook`) registered with the live signing secret
 - [ ] Cron: `POST /api/jobs/uprating` (Bearer `JOBS_SECRET`) scheduled nightly — the J4 overnight re-check
