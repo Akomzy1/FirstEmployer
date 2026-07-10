@@ -82,7 +82,7 @@ function Checklist({ steps, onOpen }: SetupData & { onOpen: (v: string) => void 
     if (s.owner === "setup") return { hmrc_paye: "hmrc", payroll: "payroll", pension: "pension", el_insurance: "insurance", ico_registration: "ico", health_safety: "hs" }[s.id] ?? null;
     if (s.owner === "records") return "records";
     if (s.owner === "contract") return "/app/documents";
-    if (s.owner === "right_to_work") return "/app";
+    if (s.owner === "right_to_work") return "/app/right-to-work";
     return null;
   };
   const router = useRouter();

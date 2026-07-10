@@ -69,9 +69,11 @@ export default async function JourneyHomePage() {
       id: "rtw",
       n: "4",
       title: "Right to work",
-      state: "locked",
-      note: "Unlocks after your contract is issued.",
-      route: null,
+      state: hasDetermination ? "available" : "locked",
+      note: hasDetermination
+        ? "Check each new hire can work in the UK, and keep the proof."
+        : "Unlocks once you've checked your new hire's status.",
+      route: "/app/right-to-work",
     },
     {
       id: "dashboard",
