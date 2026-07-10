@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Alert,
   Button,
@@ -98,11 +99,16 @@ const scroll: React.CSSProperties = { flex: 1, overflowY: "auto", WebkitOverflow
 const wrap: React.CSSProperties = { maxWidth: 640, margin: "0 auto", width: "100%", boxSizing: "border-box" };
 
 export function DocumentsFlow({ employeeName, documents, draft, defaults, floors }: DocumentsFlowProps) {
+  const router = useRouter();
   const [view, setView] = useState<View>(documents.length ? "list" : "empty");
   const [result, setResult] = useState<GenerationResultView | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
 
   const goList = () => setView(documents.length ? "list" : "empty");
+  const openApproved = () => {
+    if (result?.status === "approved") router.push(`/app/documents/${result.documentId}`);
+    else goList();
+  };
 
   function startGeneration(form: ContractForm) {
     setRunError(null);
@@ -117,7 +123,12 @@ export function DocumentsFlow({ employeeName, documents, draft, defaults, floors
     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minHeight: 0 }}>
       {view === "empty" && <EmptyView employeeName={employeeName} onCreate={() => setView("questionnaire")} />}
       {view === "list" && (
-        <ListView employeeName={employeeName} documents={documents} onCreate={() => setView("questionnaire")} />
+        <ListView
+          employeeName={employeeName}
+          documents={documents}
+          onCreate={() => setView("questionnaire")}
+          onOpen={(id) => router.push(`/app/documents/${id}`)}
+        />
       )}
       {view === "questionnaire" && (
         <QuestionnaireView
@@ -134,7 +145,7 @@ export function DocumentsFlow({ employeeName, documents, draft, defaults, floors
           employeeName={employeeName}
           result={result}
           error={runError}
-          onApproved={goList}
+          onApproved={openApproved}
           onBack={goList}
         />
       )}
@@ -218,10 +229,12 @@ function ListView({
   employeeName,
   documents,
   onCreate,
+  onOpen,
 }: {
   employeeName: string;
   documents: DocumentListItemView[];
   onCreate: () => void;
+  onOpen: (id: string) => void;
 }) {
   return (
     <div style={scroll}>
@@ -235,8 +248,15 @@ function ListView({
           </header>
           <div style={{ display: "flex", flexDirection: "column", gap: 26, marginTop: 30, marginBottom: 26 }}>
             {documents.map((d) => (
-              <DocumentCard
+              <div
                 key={d.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => onOpen(d.id)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onOpen(d.id)}
+                style={{ cursor: "pointer" }}
+              >
+              <DocumentCard
                 title={d.typeLabel}
                 verified={d.verified}
                 sealProps={d.seal}
@@ -254,6 +274,7 @@ function ListView({
                   {d.verified ? "Examiner verified" : d.status}
                 </span>
               </DocumentCard>
+              </div>
             ))}
           </div>
           <Button variant="secondary" style={{ width: "100%" }} onClick={onCreate}>

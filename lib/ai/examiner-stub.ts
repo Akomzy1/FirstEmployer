@@ -9,10 +9,9 @@
  * are all reproducible. P07 replaces the language-level simulation with the real
  * LLM examiner while keeping the deterministic checks.
  */
-import { createHash } from "crypto";
 import { checkPayFloor } from "../rules/contract/pay-floor";
 import { checkHolidayFloor } from "../rules/contract/holiday";
-import { EXAMINER_CHECKS, checklistSignature } from "../rules/examiner-checklist";
+import { EXAMINER_CHECKS, computeChecklistHash } from "../rules/examiner-checklist";
 import type {
   Examine,
   ExamineInput,
@@ -22,16 +21,10 @@ import type {
 } from "./examiner-types";
 
 export const STUB_EXAMINER_VERSION = "exam-stub-1.0";
+export { computeChecklistHash };
 
 /** Which prototype path to reproduce for the language-level checks. */
 export type ExaminerDirective = "approve" | "fix" | "human";
-
-/** Hash of checklist definition + config version — the VerificationSeal content. */
-export function computeChecklistHash(configLabel: string, examinerVersion: string): string {
-  const sig = `${checklistSignature()}|${configLabel}|${examinerVersion}`;
-  const hex = createHash("sha256").update(sig).digest("hex").toUpperCase();
-  return `${hex.slice(0, 4)}-${hex.slice(4, 8)}`;
-}
 
 /** The check the fix/human paths trip on — notice consistency (check #10). */
 const NOTICE_CHECK_ID = 10;

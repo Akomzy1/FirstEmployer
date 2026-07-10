@@ -356,3 +356,11 @@ select.fe-input {
 .fe-step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--neutral-200); transition: all var(--motion-base) var(--ease); }
 .fe-step-dot--done { background: var(--ink-900); }
 .fe-step-dot--current { width: 24px; border-radius: 999px; background: var(--ink-900); }
+
+/* Document viewer clause navigation — side rail on desktop, jump sheet on mobile. */
+.fe-doc-nav { display: none; }
+.fe-doc-jump { display: flex; }
+@media (min-width: 900px) {
+  .fe-doc-nav { display: block; }
+  .fe-doc-jump { display: none; }
+}

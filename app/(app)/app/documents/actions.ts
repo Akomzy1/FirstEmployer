@@ -6,7 +6,7 @@ import { getCurrentBusiness } from "@/lib/data/business";
 import { getPrimaryEmployee, type EmployeeRow } from "@/lib/data/employee";
 import { getLiveConfig } from "@/lib/config";
 import { generateContract } from "@/lib/ai/generator";
-import { makeStubExaminer, type ExaminerDirective } from "@/lib/ai/examiner-stub";
+import { makeExaminer } from "@/lib/ai/examiner";
 import { runGeneration } from "@/lib/documents/pipeline";
 import { createSupabaseDocumentStore } from "@/lib/documents/supabase-store";
 import type { ContractFacts } from "@/lib/templates/contract/types";
@@ -25,8 +25,6 @@ export interface ContractForm {
   holiday: string;
   sickPay: "ssp" | "company";
   pension: "nest" | "other";
-  /** P06 stub control only — the real examiner (P07) decides the verdict. */
-  demoOutcome?: ExaminerDirective;
 }
 
 async function loadContext() {
@@ -106,9 +104,9 @@ export async function generateContractAction(form: ContractForm): Promise<Genera
     facts,
     config: config.values,
     configLabel: config.label,
-    questionnaire: { ...form, demoOutcome: undefined },
+    questionnaire: { ...form },
     generate: (f, c, opts) => generateContract(f, c, opts),
-    examine: makeStubExaminer(form.demoOutcome ?? "approve"),
+    examine: makeExaminer(),
     store,
   });
 
