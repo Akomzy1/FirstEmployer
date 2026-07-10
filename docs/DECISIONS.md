@@ -310,3 +310,8 @@ Approved by: build session.
 
 components.json + lib/utils.ts (cn) + tailwindcss-animate are in place so `npx shadcn add` works when a primitive is genuinely needed, but no shadcn components are installed: the system library is bespoke, ported one-to-one from the prototype's own component sources (which the export embeds as JSX). Adding shadcn primitives that would restyle system components is prohibited by Rule 6.
 Approved by: build session.
+
+## 2026-07-10 · Post-P16 · ICO registration ZC160686 issued and wired in
+
+The founder's ICO data-protection registration was issued: **ZC160686**. The P03 honesty decision (omit the prototype's fake "ZA000000" until real) is now closed out: the number renders in the marketing footer, the auth trust footer (restoring the prototype's withheld line), the Settings footer, and the More screen footer — all from the single `ICO_REGISTRATION` constant in `lib/marketing/entity.ts`. Launch blocker #2 is DONE on the checklist.
+Approved by: founder (number supplied in session).

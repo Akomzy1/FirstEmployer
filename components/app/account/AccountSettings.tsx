@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Alert, Button, Icon, RadioCards, StatutoryReceipt } from "@/components/system";
 import { createCheckoutSession, createPortalSession, deleteAccount, saveSettings } from "@/app/(app)/app/account/actions";
 import type { TierDef, TierId } from "@/lib/pricing";
+import { ICO_REGISTRATION } from "@/lib/marketing/entity";
 
 export interface RetentionRowCopy {
   icon: string;
@@ -351,7 +352,7 @@ export function AccountSettings(props: AccountSettingsProps) {
                 </Section>
 
                 <div className="fe-tabular" style={{ font: "var(--text-caption)", color: "var(--neutral-400)", textAlign: "center", marginTop: 18 }}>
-                  Data stored in the UK · FirstEmployer v1.0
+                  {`ICO registration ${ICO_REGISTRATION} · Data stored in the UK · FirstEmployer v1.0`}
                 </div>
               </>
             )}

@@ -8,7 +8,7 @@ marked NOT DONE where true** — nothing here is aspirational (CLAUDE.md §8).
 | # | Item | Status | Owner / next step |
 |---|------|--------|-------------------|
 | 1 | **Solicitor sign-off on the clause library** | ❌ NOT DONE — `// LEGAL-REVIEW` flags live in `lib/templates/contract/clauses.ts` and `variation.ts`; every clause is placeholder legal text until reviewed | Founder + employment solicitor |
-| 2 | **ICO registration** | ❌ NOT DONE — UI deliberately shows "ICO registration in progress" (no fake number, DECISIONS P03) | Founder; add the real number to the footer + settings once issued |
+| 2 | **ICO registration** | ✅ DONE — **ZC160686** issued 2026-07-10; wired into the marketing footer, auth trust footer, Settings and More screens via the single `ICO_REGISTRATION` constant (`lib/marketing/entity.ts`) | — |
 | 3 | **DPIA** | ❌ NOT DONE — pending PRD Open Question 7 (controller vs processor for employee personal data) | Founder + solicitor |
 | 4 | **Stripe live keys + products** | ❌ NOT DONE — env has placeholders; create the three monthly prices (amounts MUST match `lib/pricing.ts`) and set `STRIPE_PRICE_*`; run the trial→active→past_due→canceled test-clock pass (state machine is unit-tested offline; the clock run needs live keys) | Founder |
 | 5 | **Production domain + SSL + `NEXT_PUBLIC_APP_URL`** | ❌ NOT DONE | Founder (Vercel) |

@@ -1,8 +1,8 @@
 /* Marketing nav + footer, ported from the Homepage export (Rule 6). Links are
- * wired to real routes; the fake ICO number is omitted until registration is
- * live (DECISIONS P03); the footer carries the canonical entity descriptor. */
+ * wired to real routes; the footer carries the canonical entity descriptor and
+ * the real ICO registration (issued 2026-07-10). */
 import Link from "next/link";
-import { ENTITY_DESCRIPTOR } from "@/lib/marketing/entity";
+import { ENTITY_DESCRIPTOR, ICO_REGISTRATION } from "@/lib/marketing/entity";
 
 export function MarketingNav() {
   return (
@@ -68,7 +68,7 @@ export function MarketingFooter({ configLabel }: { configLabel: string }) {
         <div className="foot__legal">
           <span>© 2026 FirstEmployer Ltd</span>
           <span className="sep">·</span>
-          <span>ICO registration in progress</span>
+          <span className="fe-tabular">ICO registration {ICO_REGISTRATION}</span>
           <span className="sep">·</span>
           <span>Guidance, not legal advice</span>
         </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button, Icon, TextInput } from "@/components/system";
+import { ICO_REGISTRATION } from "@/lib/marketing/entity";
 import { createClient } from "@/lib/supabase/client";
 
 /**

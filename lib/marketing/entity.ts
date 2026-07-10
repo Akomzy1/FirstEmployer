@@ -8,3 +8,7 @@ export const ENTITY_DESCRIPTOR =
 
 export const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://firstemployer.co.uk";
 export const SITE_NAME = "FirstEmployer";
+
+/** ICO data-protection registration (issued 2026-07-10; was "in progress" until
+ *  then — DECISIONS P03). One source of truth for every surface that shows it. */
+export const ICO_REGISTRATION = "ZC160686";

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentBusiness } from "@/lib/data/business";
 import { Icon } from "@/components/system";
+import { ICO_REGISTRATION } from "@/lib/marketing/entity";
 
 export const metadata = { title: "More" };
 
@@ -66,6 +67,10 @@ export default async function MorePage() {
             Sign out
           </button>
         </form>
+
+        <div className="fe-tabular" style={{ font: "var(--text-caption)", color: "var(--neutral-400)", textAlign: "center", marginTop: 20 }}>
+          {`ICO registration ${ICO_REGISTRATION} · FirstEmployer v1.0`}
+        </div>
       </div>
     </div>
   );
