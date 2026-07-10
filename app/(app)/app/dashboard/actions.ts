@@ -11,6 +11,7 @@ import { renderVariationLetter } from "@/lib/templates/contract/variation";
 import { checkPayFloor } from "@/lib/rules/contract/pay-floor";
 import type { ContractFacts } from "@/lib/templates/contract/types";
 import { assertCanGenerate, type TierId } from "@/lib/tiers";
+import { consumeToken, AI_LIMITS } from "@/lib/security/rate-limit";
 
 export interface VariationResult {
   documentId: string;
@@ -33,6 +34,7 @@ export async function generateVariationLetter(employeeId: string): Promise<Varia
 
   // Variation letters run the generation pipeline — same gate as contracts.
   assertCanGenerate({ tier: business.tier as TierId, subscription_state: business.subscription_state, trial_ends_at: business.trial_ends_at });
+  consumeToken(`${business.id}:generation`, AI_LIMITS.generation);
 
   const { data: employee } = await supabase
     .from("employees")

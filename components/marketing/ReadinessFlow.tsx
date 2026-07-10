@@ -110,7 +110,8 @@ export function ReadinessFlow() {
           <StepDots total={QUESTIONS.length} current={step} />
           <span className="fe-tabular" style={{ font: "var(--text-caption)", color: "var(--neutral-500)" }}>{step + 1} of {QUESTIONS.length}</span>
         </div>
-        <h1 style={{ font: "var(--text-h2)", letterSpacing: "var(--tracking-h)", margin: "0 0 8px" }}>{q.title}</h1>
+        {/* a11y (P16): screen readers land on the new question after a step change */}
+        <h1 key={step} tabIndex={-1} ref={(el) => el?.focus()} style={{ font: "var(--text-h2)", letterSpacing: "var(--tracking-h)", margin: "0 0 8px", outline: "none" }}>{q.title}</h1>
         <p style={{ font: "var(--text-body)", color: "var(--text-secondary)", margin: "0 0 20px" }}>{q.detail}</p>
         <RadioCards
           options={[

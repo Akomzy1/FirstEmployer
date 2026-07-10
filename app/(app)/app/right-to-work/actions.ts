@@ -6,6 +6,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { getCurrentBusiness } from "@/lib/data/business";
 import { determineRtwRoute, toRtwResult, requiresFollowUp, rtwFollowUpSchedule, type RtwRoute, type RtwResultChoice } from "@/lib/rules/rtw";
 import { renderRtwRecordPdf } from "@/lib/pdf/rtw-record";
+import { validateDataUrlUpload, scanUpload } from "@/lib/security/upload";
 
 export interface RecordRtwInput {
   employeeId: string;
@@ -87,8 +88,9 @@ export async function recordRtwCheck(input: RecordRtwInput): Promise<RecordRtwRe
   const evidencePaths: string[] = [];
   let evidenceId: string | null = null;
   if (input.evidenceDataUrl) {
-    const decoded = decodeDataUrl(input.evidenceDataUrl);
-    if (decoded) {
+    // Type whitelist + size cap + magic-byte check + AV hook (P16 security pass).
+    const decoded = await scanUpload(validateDataUrlUpload(input.evidenceDataUrl, "image"));
+    {
       const { data: evRow, error: evErr } = await supabase
         .from("evidence")
         .insert({

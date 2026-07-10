@@ -1,0 +1,35 @@
+# FirstEmployer CI (P16): one gate, everything blocks on failure.
+# Covers CLAUDE.md §6: status goldens (40 cases), examiner adversarial 15/15,
+# deadline/date-math goldens, J4 uprating end-to-end, config-resolver goldens,
+# assistant adversarial 10/10, RLS cross-tenant + immutability (PGlite),
+# billing/tier gates, publish flow, and the grep gates (statutory literals,
+# decorative green, secrets). Lighthouse budgets run against the built app.
+name: gate
+on:
+  push: { branches: [main] }
+  pull_request:
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm gate
+      - run: pnpm build
+  lighthouse:
+    runs-on: ubuntu-latest
+    needs: gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: npx --yes @lhci/cli autorun --config=lighthouserc.json
+        # Budgets: SEO >= 0.95, LCP < 2s, CLS < 0.05 on Home + the pillar guide.

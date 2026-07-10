@@ -191,7 +191,8 @@ export function StatusAdvisorFlow({ initial }: { initial: Draft }) {
         <Flow footer={<Button variant="primary" style={{ width: "100%" }} disabled={!answers[q.id]} onClick={nextQuestion}>Continue</Button>}>
           <div key={qIndex} style={{ animation: "fe-view-in 250ms var(--ease)" }}>
             <Eyebrow>{q.factor}</Eyebrow>
-            <h1 style={{ font: "var(--text-h1)", fontSize: 30, letterSpacing: "var(--tracking-h)", margin: "0 0 22px" }}>{text(q.question)}</h1>
+            {/* a11y (P16): focus lands on the new question after each step */}
+            <h1 key={qIndex} tabIndex={-1} ref={(el) => el?.focus()} style={{ font: "var(--text-h1)", fontSize: 30, letterSpacing: "var(--tracking-h)", margin: "0 0 22px", outline: "none" }}>{text(q.question)}</h1>
             <RadioCards options={q.options} value={answers[q.id]} onChange={answer} />
             <button
               onClick={() => setWhyOpen((o) => !o)}

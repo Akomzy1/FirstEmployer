@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "gen:seed": "node scripts/gen-seed.mjs",
     "bundle:schema": "node scripts/bundle-schema.mjs",
-    "gate": "npm run typecheck && npm run lint && npm run test"
+    "gate": "npm run typecheck && npm run lint && npm run test && npm run gates",
+    "gates": "node scripts/gates/statutory-literals.mjs && node scripts/gates/decorative-green.mjs && node scripts/gates/secrets-audit.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",

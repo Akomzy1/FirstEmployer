@@ -6,6 +6,7 @@ import { getLiveConfig } from "@/lib/config";
 import { answerQuestion, type AssistantResponse } from "@/lib/ai/assistant";
 import { loadGuidanceCorpus } from "@/lib/ai/guidance-corpus";
 import { deriveDashboard, SEGMENT_SOURCES, type ObligationRowInput } from "@/lib/rules/obligations";
+import { consumeToken, AI_LIMITS } from "@/lib/security/rate-limit";
 
 export interface AskResult {
   threadId: string;
@@ -25,6 +26,9 @@ export async function askAssistant(question: string, threadId?: string): Promise
   if (!user) throw new Error("not authenticated");
   const business = await getCurrentBusiness();
   if (!business) throw new Error("no business");
+
+  // AI endpoints are rate-limited per business (P16 security pass).
+  consumeToken(`${business.id}:assistant`, AI_LIMITS.assistant);
 
   const config = await getLiveConfig();
 
