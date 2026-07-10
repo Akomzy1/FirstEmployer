@@ -17,6 +17,7 @@ export default async function RightToWorkPage() {
   if (!business) redirect("/onboarding");
 
   const workers = await getRtwOverview(business.id);
+  const rtwDraft = (business.journey_state?.rtw ?? null) as import("./actions").RtwDraft | null;
   if (workers.length === 0) {
     return (
       <ComingSoon
@@ -47,6 +48,7 @@ export default async function RightToWorkPage() {
       checkerName={checkerName}
       todayIso={new Date().toISOString().slice(0, 10)}
       penalties={penalties}
+      draft={rtwDraft}
     />
   );
 }

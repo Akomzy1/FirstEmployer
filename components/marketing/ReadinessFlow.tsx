@@ -3,7 +3,7 @@
 /* Readiness check (FR-8.1/8.2) — one question per screen on the app's radio-card
  * pattern, results with severity-ordered gaps, an email gate for the full
  * results, and the gaps handoff into onboarding via querystring. */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Icon, RadioCards, StepDots } from "@/components/system";
 import { captureReadinessLead } from "@/app/(marketing)/readiness/actions";
 
@@ -32,9 +32,34 @@ const QUESTIONS: ReadinessQuestion[] = [
 
 type Step = "intro" | number | "email" | "results";
 
+const STORE_KEY = "fe_readiness_draft";
+
 export function ReadinessFlow() {
-  const [step, setStep] = useState<Step>("intro");
-  const [answers, setAnswers] = useState<Record<string, "yes" | "no">>({});
+  // Pre-auth flow: per-step persistence is sessionStorage (FR-8.6 spirit — a
+  // killed tab restores; server persistence starts at signup).
+  const [step, setStepRaw] = useState<Step>("intro");
+  const [answers, setAnswersRaw] = useState<Record<string, "yes" | "no">>({});
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(STORE_KEY);
+      if (raw) {
+        const d = JSON.parse(raw) as { step?: Step; answers?: Record<string, "yes" | "no"> };
+        if (d.answers) setAnswersRaw(d.answers);
+        if (d.step !== undefined && d.step !== "results") setStepRaw(d.step);
+      }
+    } catch { /* fresh start */ }
+  }, []);
+  const setStep = (v: Step) => {
+    setStepRaw(v);
+    try { sessionStorage.setItem(STORE_KEY, JSON.stringify({ step: v, answers })); } catch { /* best effort */ }
+  };
+  const setAnswers = (fn: (prev: Record<string, "yes" | "no">) => Record<string, "yes" | "no">) => {
+    setAnswersRaw((prev) => {
+      const next = fn(prev);
+      try { sessionStorage.setItem(STORE_KEY, JSON.stringify({ step, answers: next })); } catch { /* best effort */ }
+      return next;
+    });
+  };
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

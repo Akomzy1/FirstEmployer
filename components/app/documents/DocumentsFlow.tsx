@@ -15,6 +15,7 @@ import {
 } from "@/components/system";
 import { saveContractDraft, generateContractAction, type ContractForm } from "@/app/(app)/app/documents/actions";
 import { FeedbackWidget } from "@/components/app/FeedbackWidget";
+import { markModuleCompleted } from "@/components/pwa/InstallPrompt";
 import type { DocumentListItemView, GenerationResultView, ExamCheckView } from "@/lib/documents/view";
 
 /** A statutory receipt's copy, assembled server-side from config (no literals here). */
@@ -789,6 +790,9 @@ function GenerationView({
       </div>
     );
   }
+
+  // First-module-completion event arms the PWA install prompt (P15).
+  if (stage === "approved") markModuleCompleted();
 
   if (stage === "approved") {
     return (

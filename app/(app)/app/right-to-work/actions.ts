@@ -218,3 +218,35 @@ export async function recordRtwCheck(input: RecordRtwInput): Promise<RecordRtwRe
     isRecheck: !!input.isRecheck,
   };
 }
+
+/* ------------------- save & resume (FR-8.6, P15) ------------------- */
+
+export interface RtwDraft {
+  view?: string;
+  activeId?: string;
+  route?: RtwRoute;
+  whatChecked?: string;
+  isRecheck?: boolean;
+  checked?: number[];
+  resultChoice?: "continuous" | "time_limited";
+  expiry?: string;
+  checker?: string;
+  /** The evidence photo is deliberately NOT persisted server-side per step —
+   *  it must be retaken with the person present after an interruption. */
+}
+
+/** Autosave the walkthrough draft into business.journey_state.rtw. */
+export async function saveRtwDraft(patch: RtwDraft): Promise<void> {
+  const { supabase, business } = await loadContext();
+  const journey = { ...(business.journey_state ?? {}) };
+  journey.rtw = { ...((journey.rtw as RtwDraft) ?? {}), ...patch };
+  await supabase.from("businesses").update({ journey_state: journey }).eq("id", business.id);
+}
+
+/** Clear the draft once the record is created. */
+export async function clearRtwDraft(): Promise<void> {
+  const { supabase, business } = await loadContext();
+  const journey = { ...(business.journey_state ?? {}) };
+  delete journey.rtw;
+  await supabase.from("businesses").update({ journey_state: journey }).eq("id", business.id);
+}

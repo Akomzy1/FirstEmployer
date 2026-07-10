@@ -3,16 +3,19 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, Button, DateInput, DeadlineChip, DocumentCard, Icon, StatutoryReceipt, StatusPill, TextInput } from "@/components/system";
-import { recordRtwCheck, type RecordRtwInput, type RecordRtwResult } from "@/app/(app)/app/right-to-work/actions";
+import { recordRtwCheck, saveRtwDraft, clearRtwDraft, type RecordRtwInput, type RecordRtwResult, type RtwDraft } from "@/app/(app)/app/right-to-work/actions";
 import type { RtwWorkerOverview } from "@/lib/data/rtw";
 import type { RtwRoute } from "@/lib/rules/rtw";
 import { FeedbackWidget } from "@/components/app/FeedbackWidget";
+import { markModuleCompleted } from "@/components/pwa/InstallPrompt";
 
 export interface RtwFlowProps {
   workers: RtwWorkerOverview[];
   checkerName: string;
   todayIso: string;
   penalties: { first: string; repeat: string };
+  /** Resumed walkthrough draft (FR-8.6) from business.journey_state.rtw. */
+  draft?: RtwDraft | null;
 }
 
 type View = "home" | "route" | "guidance" | "sharecode" | "manual" | "record" | "done" | "worker";
@@ -225,21 +228,40 @@ function ResultGate({ worker, items, checked, setChecked, evidence, setEvidence,
   );
 }
 
-export function RtwFlow({ workers, checkerName, todayIso, penalties }: RtwFlowProps) {
+const RESUMABLE: View[] = ["route", "guidance", "sharecode", "manual", "record"];
+
+export function RtwFlow({ workers, checkerName, todayIso, penalties, draft }: RtwFlowProps) {
   const router = useRouter();
-  const [view, setView] = useState<View>("home");
-  const [activeId, setActiveId] = useState<string | null>(workers[0]?.employeeId ?? null);
-  const [route, setRoute] = useState<RtwRoute>("manual");
-  const [whatChecked, setWhatChecked] = useState("");
-  const [isRecheck, setIsRecheck] = useState(false);
-  const [evidence, setEvidence] = useState<string | null>(null);
-  const [checked, setChecked] = useState<number[]>([]);
-  const [resultChoice, setResultChoice] = useState<"continuous" | "time_limited">("continuous");
-  const [expiry, setExpiry] = useState("");
-  const [checker, setChecker] = useState(checkerName);
+  const resumedView = draft?.view && (RESUMABLE as string[]).includes(draft.view) ? (draft.view as View) : "home";
+  const [view, setViewRaw] = useState<View>(resumedView);
+  const [activeId, setActiveId] = useState<string | null>(draft?.activeId ?? workers[0]?.employeeId ?? null);
+  const [route, setRoute] = useState<RtwRoute>(draft?.route ?? "manual");
+  const [whatChecked, setWhatChecked] = useState(draft?.whatChecked ?? "");
+  const [isRecheck, setIsRecheck] = useState(draft?.isRecheck ?? false);
+  const [evidence, setEvidence] = useState<string | null>(null); // photos are retaken after a resume — deliberate
+  const [checked, setChecked] = useState<number[]>(draft?.checked ?? []);
+  const [resultChoice, setResultChoice] = useState<"continuous" | "time_limited">(draft?.resultChoice ?? "continuous");
+  const [expiry, setExpiry] = useState(draft?.expiry ?? "");
+  const [checker, setChecker] = useState(draft?.checker ?? checkerName);
   const [done, setDone] = useState<RecordRtwResult | null>(null);
   const [saving, setSaving] = useState(false);
+  const [savedDraft, setSavedDraft] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Per-step autosave (FR-8.6): every view change persists the walkthrough
+  // state server-side; a killed tab resumes exactly here.
+  function persist(patch: RtwDraft) {
+    setSavedDraft(false);
+    saveRtwDraft(patch).then(() => setSavedDraft(true)).catch(() => setSavedDraft(true));
+  }
+  function setView(v: View) {
+    setViewRaw(v);
+    if ((RESUMABLE as string[]).includes(v)) {
+      persist({ view: v, activeId: activeId ?? undefined, route, whatChecked, isRecheck, checked, resultChoice, expiry, checker });
+    } else if (v === "home" || v === "done") {
+      clearRtwDraft().catch(() => {});
+    }
+  }
 
   const worker = workers.find((w) => w.employeeId === activeId) ?? workers[0];
 
@@ -360,7 +382,7 @@ export function RtwFlow({ workers, checkerName, todayIso, penalties }: RtwFlowPr
   /* -------- ROUTE SELECT -------- */
   if (view === "route") {
     return shell(<>
-      <TopBar eyebrow={isRecheck ? "Follow-up check" : "Right to work check"} onBack={() => setView(isRecheck ? "worker" : "home")} />
+      <TopBar eyebrow={isRecheck ? "Follow-up check" : "Right to work check"} onBack={() => setView(isRecheck ? "worker" : "home")} right={<DraftSaved saved={savedDraft} />} />
       <div style={scroll}><div style={{ padding: "0 20px 40px" }}><div style={wrap}>
         <header style={{ margin: "18px 0 22px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
@@ -426,7 +448,7 @@ export function RtwFlow({ workers, checkerName, todayIso, penalties }: RtwFlowPr
     ];
     const preview = <GovResultPreview name={worker.name} fullName={worker.fullName} expiryLabel={null} checkedLabel={todayLabel} />;
     return shell(<>
-      <TopBar eyebrow={isRecheck ? "Follow-up check" : "Online check"} onBack={() => setView("route")} />
+      <TopBar eyebrow={isRecheck ? "Follow-up check" : "Online check"} onBack={() => setView("route")} right={<DraftSaved saved={savedDraft} />} />
       <div style={scroll}><div style={{ padding: "0 20px 40px" }}><div style={wrap}>
         <StepHeader label="Online right to work check" title={`Check ${worker.name} on GOV.UK`} lede={`You'll need the share code ${worker.name} gives you, and their date of birth. The service is free. We'll walk you through it.`} />
         <div style={{ marginBottom: 22 }}>
@@ -468,7 +490,7 @@ export function RtwFlow({ workers, checkerName, todayIso, penalties }: RtwFlowPr
       { icon: "event", t: "Check it hasn't expired", s: "A British or Irish passport gives a permanent right to work even if expired — but check the person is who it says." },
     ];
     return shell(<>
-      <TopBar eyebrow="Manual check" onBack={() => setView("route")} />
+      <TopBar eyebrow="Manual check" onBack={() => setView("route")} right={<DraftSaved saved={savedDraft} />} />
       <div style={scroll}><div style={{ padding: "0 20px 40px" }}><div style={wrap}>
         <StepHeader label="Manual document check" title={`Check ${worker.name}'s passport`} lede={`A British or Irish passport is all you need — it proves a permanent right to work. Do this with ${worker.name} and the original document in front of you.`} />
         <div style={{ marginBottom: 22 }}>
@@ -492,7 +514,7 @@ export function RtwFlow({ workers, checkerName, todayIso, penalties }: RtwFlowPr
   /* -------- RECORD FORM -------- */
   if (view === "record") {
     return shell(<>
-      <TopBar eyebrow={isRecheck ? "Follow-up record" : "Check record"} onBack={() => setView(route === "manual" ? "manual" : "sharecode")} />
+      <TopBar eyebrow={isRecheck ? "Follow-up record" : "Check record"} onBack={() => setView(route === "manual" ? "manual" : "sharecode")} right={<DraftSaved saved={savedDraft} />} />
       <div style={scroll}><div style={{ padding: "0 20px 40px" }}><div style={wrap}>
         <StepHeader label="Almost done" title="Save the check record" lede="This is what the law asks you to keep. We've filled in most of it — just check it's right." />
         <Label>The check</Label>
@@ -552,6 +574,7 @@ export function RtwFlow({ workers, checkerName, todayIso, penalties }: RtwFlowPr
   }
 
   /* -------- DONE -------- */
+  if (view === "done" && done) markModuleCompleted();
   if (view === "done" && done) {
     const timeLimited = done.result === "follow_up_required";
     return shell(
@@ -638,6 +661,16 @@ export function RtwFlow({ workers, checkerName, todayIso, penalties }: RtwFlowPr
   }
 
   return shell(<div style={{ padding: 24 }} />);
+}
+
+/* ---- quiet per-step autosave indicator (design system) ---- */
+function DraftSaved({ saved }: { saved: boolean }) {
+  return (
+    <span className="fe-tabular" style={{ display: "inline-flex", alignItems: "center", gap: 6, font: "500 13px/1 var(--font-body)", color: saved ? "var(--verified-green-700)" : "var(--neutral-500)", paddingRight: 8 }}>
+      {saved ? <Icon name="check" size={14} /> : <Icon name="progress_activity" size={14} style={{ animation: "fe-spin 800ms linear infinite" }} />}
+      {saved ? "Saved just now" : "Saving…"}
+    </span>
+  );
 }
 
 /* ---- route decision card ---- */

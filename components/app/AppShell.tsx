@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/system";
+import { OfflineBanner } from "@/components/pwa/OfflineBanner";
 
 const NAV = [
   { id: "home", label: "Home", icon: "home", href: "/app" },
@@ -100,7 +101,10 @@ export function AppShell({
       </aside>
 
       {/* Content */}
-      <main className="fe-app-main">{children}</main>
+      <main className="fe-app-main">
+        <OfflineBanner />
+        {children}
+      </main>
 
       {/* Mobile bottom tab bar */}
       <nav

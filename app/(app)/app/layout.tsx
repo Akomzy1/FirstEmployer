@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { getCurrentBusiness } from "@/lib/data/business";
 
 function initialsOf(name: string): string {
@@ -14,8 +15,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!business) redirect("/onboarding");
 
   return (
-    <AppShell businessName={business.name} initials={initialsOf(business.name)}>
-      {children}
-    </AppShell>
+    <>
+      <AppShell businessName={business.name} initials={initialsOf(business.name)}>
+        {children}
+      </AppShell>
+      <InstallPrompt />
+    </>
   );
 }
