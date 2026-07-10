@@ -226,3 +226,54 @@ describe("account deletion honours statutory retention (P12)", () => {
     ).rejects.toThrow(/not a member/i);
   });
 });
+
+describe("config publish flow (P14)", () => {
+  it("publish requires a note, flips statuses, and lands in events", async () => {
+    await asSuperuser();
+    // Seed a draft version to publish.
+    const draft = await db.query<{ id: string }>(`
+      insert into config_versions (label, effective_from, status, values)
+      values ('2027.1', '2027-04-01', 'draft', (select values from config_versions where label = '2026.2'))
+      returning id;
+    `);
+    const draftId = draft.rows[0].id;
+
+    // A short note is rejected.
+    await expect(
+      db.query(`select public.publish_config_version('${draftId}', 'short', '${ID.daveUser}', 'admin@firstemployer.co.uk');`),
+    ).rejects.toThrow(/audit note/i);
+
+    // A proper publish supersedes the old live version and promotes the draft.
+    await db.query(
+      `select public.publish_config_version('${draftId}', 'Tax year 2027/28 uprating per HMRC bulletin.', '${ID.daveUser}', 'admin@firstemployer.co.uk');`,
+    );
+    const statuses = await db.query<{ label: string; status: string }>(
+      `select label, status::text from config_versions order by label;`,
+    );
+    const byLabel = Object.fromEntries(statuses.rows.map((r) => [r.label, r.status]));
+    expect(byLabel["2027.1"]).toBe("live");
+    expect(byLabel["2026.2"]).toBe("superseded");
+
+    const ev = await db.query<{ n: number }>(
+      `select count(*)::int as n from events where action = 'config.published' and entity_id = '${draftId}';`,
+    );
+    expect(ev.rows[0].n).toBe(1);
+
+    // Publishing an already-live version is rejected.
+    await expect(
+      db.query(`select public.publish_config_version('${draftId}', 'A second publish attempt note.', '${ID.daveUser}', 'admin@firstemployer.co.uk');`),
+    ).rejects.toThrow(/already live/i);
+  });
+
+  it("feedback rows insert for members and are inaccessible to authenticated reads", async () => {
+    await asUser(ID.daveUser);
+    await db.exec(
+      `insert into feedback (business_id, flow, rating, comment) values ('${ID.doPlumbing}', 'contracts', 5, 'The examiner caught a clause I would have got wrong.');`,
+    );
+    const visible = await db.query<{ n: number }>(`select count(*)::int as n from feedback;`);
+    expect(visible.rows[0].n).toBe(0); // no select policy — admin (service role) only
+    await asSuperuser();
+    const all = await db.query<{ n: number }>(`select count(*)::int as n from feedback;`);
+    expect(all.rows[0].n).toBe(1);
+  });
+});

@@ -1,14 +1,14 @@
-// NO-PROTOTYPE: placeholder route only — the admin console is built in
-// Prompt 14 against Admin Console (standalone).html. Desktop-first.
-export default function AdminHome() {
-  return (
-    <main style={{ padding: "56px 24px", maxWidth: 960, margin: "0 auto" }}>
-      <h1 style={{ font: "var(--text-h2)", letterSpacing: "var(--tracking-h)" }}>
-        Admin console
-      </h1>
-      <p style={{ font: "var(--text-body)", color: "var(--text-secondary)", marginTop: 12 }}>
-        Built in Prompt 14. Service-role access only.
-      </p>
-    </main>
-  );
+import "../admin.css";
+import { requireAdmin } from "@/lib/admin/guard";
+import { loadAdminData } from "@/lib/admin/data";
+import { AdminConsole } from "@/components/admin/AdminConsole";
+
+export const metadata = { title: "FE Admin", robots: { index: false, follow: false } };
+export const dynamic = "force-dynamic";
+
+export default async function AdminPage() {
+  // Hard block: non-allowlisted users get a 404 (the surface doesn't exist for them).
+  const admin = await requireAdmin();
+  const data = await loadAdminData();
+  return <AdminConsole data={data} adminEmail={admin.email} />;
 }

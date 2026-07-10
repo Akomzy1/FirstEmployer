@@ -6,6 +6,7 @@ import { Alert, Button, DateInput, DeadlineChip, DocumentCard, Icon, StatutoryRe
 import { recordRtwCheck, type RecordRtwInput, type RecordRtwResult } from "@/app/(app)/app/right-to-work/actions";
 import type { RtwWorkerOverview } from "@/lib/data/rtw";
 import type { RtwRoute } from "@/lib/rules/rtw";
+import { FeedbackWidget } from "@/components/app/FeedbackWidget";
 
 export interface RtwFlowProps {
   workers: RtwWorkerOverview[];
@@ -593,6 +594,7 @@ export function RtwFlow({ workers, checkerName, todayIso, penalties }: RtwFlowPr
           <Icon name="inventory_2" size={20} style={{ color: "var(--neutral-500)", flex: "none" }} />
           Saved to your document vault, encrypted in the UK.
         </div>
+        <div style={{ marginBottom: 16 }}><FeedbackWidget flow="rtw" /></div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <Button variant="primary" style={{ width: "100%" }} onClick={() => router.refresh()}>Back to right to work</Button>
         </div>

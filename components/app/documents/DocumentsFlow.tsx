@@ -14,6 +14,7 @@ import {
   VerificationSeal,
 } from "@/components/system";
 import { saveContractDraft, generateContractAction, type ContractForm } from "@/app/(app)/app/documents/actions";
+import { FeedbackWidget } from "@/components/app/FeedbackWidget";
 import type { DocumentListItemView, GenerationResultView, ExamCheckView } from "@/lib/documents/view";
 
 /** A statutory receipt's copy, assembled server-side from config (no literals here). */
@@ -812,6 +813,7 @@ function GenerationView({
             <div style={{ marginTop: 26 }}>
               <Button variant="primary" style={{ width: "100%" }} onClick={onApproved}>See your contract</Button>
             </div>
+            <FeedbackWidget flow="contracts" />
           </div>
         </div>
       </div>

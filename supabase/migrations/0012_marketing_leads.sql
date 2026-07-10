@@ -16,3 +16,7 @@ alter table marketing_leads enable row level security;
 create policy leads_insert_any on marketing_leads
   for insert to anon, authenticated with check (true);
 -- no select/update/delete policies: service role only.
+
+-- Table-level grants (0006's blanket grant predates this table).
+grant insert on marketing_leads to anon, authenticated;
+grant all on marketing_leads to service_role;
