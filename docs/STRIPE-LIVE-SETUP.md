@@ -47,8 +47,8 @@ Starts `sk_live_...`. That is STRIPE_SECRET_KEY.
 
 Developers → Webhooks → + Add endpoint.
 
-  Endpoint URL:  https://<your-production-domain>/api/stripe/webhook
-                 (needs launch blocker #5 — the production domain — first)
+  Endpoint URL:  https://firstemployer.co.uk/api/stripe/webhook
+                 (domain secured 2026-07-10: firstemployer.co.uk — www redirects to apex)
 
   Events to send (exactly these four; everything else is ignored by the code):
     - checkout.session.completed
@@ -75,7 +75,7 @@ STRIPE_PRICE_GROWTH=price_<paste-the-id>
 Also required for checkout redirects (part of launch blocker #5):
 
 ```
-NEXT_PUBLIC_APP_URL=https://<your-production-domain>
+NEXT_PUBLIC_APP_URL=https://firstemployer.co.uk
 ```
 
 Redeploy on Vercel after saving env vars (they only apply to new builds).
