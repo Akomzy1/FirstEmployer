@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { SUPPORT_EMAIL } from "@/lib/marketing/entity";
+import { SITE_URL, SUPPORT_EMAIL } from "@/lib/marketing/entity";
 
 /**
  * Readiness-check email gate (FR-8.2): store the lead, and send the results
@@ -39,7 +39,7 @@ export async function captureReadinessLead(input: {
             (input.gaps.length
               ? `The gaps to close before your first hire:\n${input.gaps.map((g) => `• ${g}`).join("\n")}\n\n`
               : "You look ready — nice work.\n\n") +
-            "Start your free 7-day trial (no card needed) and we'll walk you through each step: https://firstemployer.co.uk/onboarding",
+            `Start your free 7-day trial (no card needed) and we'll walk you through each step: ${SITE_URL}/onboarding`,
         }),
       });
     } catch {

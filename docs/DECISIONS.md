@@ -315,3 +315,8 @@ Approved by: build session.
 
 The founder's ICO data-protection registration was issued: **ZC160686**. The P03 honesty decision (omit the prototype's fake "ZA000000" until real) is now closed out: the number renders in the marketing footer, the auth trust footer (restoring the prototype's withheld line), the Settings footer, and the More screen footer — all from the single `ICO_REGISTRATION` constant in `lib/marketing/entity.ts`. Launch blocker #2 is DONE on the checklist.
 Approved by: founder (number supplied in session).
+
+## 2026-07-11 · Launch ops · Canonical domain is www.firstemployer.co.uk
+
+Vercel's domain configuration ended up with www as the primary domain and the bare domain 308-redirecting to it; flipping it in the dashboard didn't work out for the founder. Rather than fight the hosting UI, the app adopts www as canonical: `NEXT_PUBLIC_APP_URL=https://www.firstemployer.co.uk` (Vercel env + .env.local), the `SITE_URL` fallback, and the readiness-email link (now derived from `SITE_URL` rather than a literal). The bare-domain redirect preserves paths, so nothing breaks for users typing the short form. The Stripe webhook endpoint must point at the www host — Stripe does not follow redirects.
+Approved by: founder (in session — "the flipping is not working out").
