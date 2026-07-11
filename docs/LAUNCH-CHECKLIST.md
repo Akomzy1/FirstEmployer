@@ -24,9 +24,14 @@ marked NOT DONE where true** — nothing here is aspirational (CLAUDE.md §8).
       functions, RLS from anon. (The pending bundle had only partially applied; re-applied
       idempotently via `scripts/db/apply-sql.mjs` + Management API token.) Known WARN:
       20 non-canonical businesses from P03 e2e runs — harmless residue, cleanup optional.
-- [ ] Set env: Supabase keys, `ANTHROPIC_API_KEY`, Stripe keys + price ids, `RESEND_API_KEY`, `JOBS_SECRET`, `ADMIN_EMAILS`, `NEXT_PUBLIC_APP_URL`
-- [ ] Stripe webhook endpoint (`/api/stripe/webhook`) registered with the live signing secret
-- [ ] Cron: `POST /api/jobs/uprating` (Bearer `JOBS_SECRET`) scheduled nightly — the J4 overnight re-check
+- [x] Set env — **done (2026-07-11)**: all 13 production vars in Vercel (`CRON_SECRET` mirrors
+      `JOBS_SECRET` for Vercel cron auth). Canonical domain is **www**.firstemployer.co.uk
+      (DECISIONS 2026-07-11); bare domain 308s to it.
+- [x] Stripe webhook — **done**: registered at `https://www.firstemployer.co.uk/api/stripe/webhook`;
+      unsigned POST returns 400 (signature check live).
+- [x] Cron — **done + verified live (2026-07-11)**: `vercel.json` cron hits `/api/jobs/uprating`
+      02:00 UTC (GET + Bearer, same guard as POST). Manual authenticated run returned 200:
+      config 2026.2, 20 businesses / 2 employees checked, 0 flagged. Wrong secret → 401.
 - [ ] Lighthouse CI run against the deploy (config committed: SEO ≥ 0.95, LCP < 2.0s, CLS < 0.05 on Home + pillar guide)
 - [ ] PWA installability verified on Android Chrome and iOS Safari (add to home screen); airplane-mode mid-questionnaire → reconnect → nothing lost
 - [ ] axe pass on the top 10 screens (focus management + aria labels are in; the browser run needs the deploy)
