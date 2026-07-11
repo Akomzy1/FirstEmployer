@@ -3,6 +3,7 @@
  * follow-up edits (rates render from getLiveConfig — Rule 4). */
 /* eslint-disable @next/next/no-img-element, react/no-unescaped-entities */
 import type { MarketingVars } from "@/lib/marketing/vars";
+import { TIERS } from "@/lib/pricing";
 export function HomeBody({ v }: { v: MarketingVars }) {
   return (
     <>
@@ -355,51 +356,25 @@ export function HomeBody({ v }: { v: MarketingVars }) {
             <h2>One price. No accountant's invoice.</h2>
             <p>Start free. Move up only when you're ready to hire. Cancel any time.</p>
           </div>
+          {/* Cards render from lib/pricing.ts (single source of truth) — the
+              prototype's Check/Launch/Grow strip was an outdated pricing model
+              (DECISIONS 2026-07-11). Visual structure unchanged. */}
           <div className="price__grid">
-      
-            <div className="tier">
-              <div className="tier__name">Check</div>
-              <p className="tier__for">See where you stand</p>
-              <div className="tier__price"><b className="fe-tabular">Free</b></div>
-              <p className="tier__note">No card required</p>
-              <ul className="tier__list">
-                <li><span className="fe-icon">check</span>2-minute readiness check</li>
-                <li><span className="fe-icon">check</span>Your eight duties, explained</li>
-                <li><span className="fe-icon">check</span>Employment status advisor</li>
-              </ul>
-              <a className="fe-btn fe-btn--secondary" href="#">Start free</a>
-            </div>
-      
-            <div className="tier tier--hi">
-              <span className="tier__flag">Most popular</span>
-              <div className="tier__name">Launch</div>
-              <p className="tier__for">Everything to hire your first employee</p>
-              <div className="tier__price"><b className="fe-tabular">£{v.launchPrice}</b><span>/month</span></div>
-              <p className="tier__note">Billed monthly · cancel any time</p>
-              <ul className="tier__list">
-                <li><span className="fe-icon">check</span>Everything in Check</li>
-                <li><span className="fe-icon">check</span>Verified contracts &amp; documents</li>
-                <li><span className="fe-icon">check</span>Right-to-work checks &amp; storage</li>
-                <li><span className="fe-icon">check</span>Live compliance dashboard</li>
-                <li><span className="fe-icon">check</span>AI assistant, grounded in guidance</li>
-              </ul>
-              <a className="fe-btn fe-btn--primary" href="#">Start free trial</a>
-            </div>
-      
-            <div className="tier">
-              <div className="tier__name">Grow</div>
-              <p className="tier__for">For a small, growing team</p>
-              <div className="tier__price"><b className="fe-tabular">£{v.growthPrice}</b><span>/month</span></div>
-              <p className="tier__note">Billed monthly · cancel any time</p>
-              <ul className="tier__list">
-                <li><span className="fe-icon">check</span>Everything in Launch</li>
-                <li><span className="fe-icon">check</span>Up to 10 employees</li>
-                <li><span className="fe-icon">check</span>Multiple contract templates</li>
-                <li><span className="fe-icon">check</span>Priority support</li>
-              </ul>
-              <a className="fe-btn fe-btn--secondary" href="#">Start free trial</a>
-            </div>
-      
+            {TIERS.map((t) => (
+              <div key={t.id} className={t.highlight ? "tier tier--hi" : "tier"}>
+                {t.highlight ? <span className="tier__flag">Most popular</span> : null}
+                <div className="tier__name">{t.name}</div>
+                <p className="tier__for">{t.tagline}</p>
+                <div className="tier__price"><b className="fe-tabular">£{t.price}</b><span>/month</span></div>
+                <p className="tier__note">7-day free trial · no card · cancel any time</p>
+                <ul className="tier__list">
+                  {t.features.map((f) => (
+                    <li key={f}><span className="fe-icon">check</span>{f}</li>
+                  ))}
+                </ul>
+                <a className={t.highlight ? "fe-btn fe-btn--primary" : "fe-btn fe-btn--secondary"} href="/auth">Start free trial</a>
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -3,6 +3,7 @@
  * follow-up edits (rates render from getLiveConfig — Rule 4). */
 /* eslint-disable @next/next/no-img-element, react/no-unescaped-entities */
 import type { MarketingVars } from "@/lib/marketing/vars";
+import { TIERS } from "@/lib/pricing";
 export function PricingBody({ v }: { v: MarketingVars }) {
   return (
     <>
@@ -18,7 +19,7 @@ export function PricingBody({ v }: { v: MarketingVars }) {
             <a href="/guides">Guides</a>
             <a href="/pricing" aria-current="page">Pricing</a>
             <a href="/trust">Trust</a>
-            <a className="fe-btn fe-btn--primary mk-nav__cta" href="#" style={{ minHeight: "44px", padding: "0 20px", fontSize: "15px" }}>Start free trial</a>
+            <a className="fe-btn fe-btn--primary mk-nav__cta" href="/auth" style={{ minHeight: "44px", padding: "0 20px", fontSize: "15px" }}>Start free trial</a>
           </div>
         </div>
       </nav>
@@ -42,63 +43,27 @@ export function PricingBody({ v }: { v: MarketingVars }) {
             <span className="pr-billing"><span className="pr-billing__pill">Monthly</span> One simple price — no annual lock-in</span>
           </div>
       
+          {/* Cards render from lib/pricing.ts (single source of truth) — the
+              ported card copy oversold Starter (it is monitoring-only, PRD §10)
+              and listed P1 features as current (DECISIONS 2026-07-11). */}
           <div className="pr-tiers">
-      
-            {/* Starter */}
-            <article className="pr-tier">
-              <h2 className="pr-tier__name">Starter</h2>
-              <p className="pr-tier__for">For businesses that already employ people and just need to stay compliant.</p>
-              <div className="pr-tier__price"><b className="fe-tabular">£{v.starterPrice}</b><span>/month</span></div>
-              <p className="pr-tier__note"><span className="fe-icon">check_circle</span> 7-day free trial, no card</p>
-              <div className="pr-tier__div"></div>
-              <p className="pr-tier__caps">Up to 3 employees</p>
-              <ul className="pr-tier__list">
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Live <b>compliance dashboard</b> for your team</span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Verified contracts &amp; documents</span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Right-to-work checks &amp; secure storage</span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>AI assistant, grounded in official guidance</span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Ongoing monitoring as the law changes</span></li>
-              </ul>
-              <a className="fe-btn fe-btn--secondary" href="#">Start free trial</a>
-            </article>
-      
-            {/* Launch (highlighted) */}
-            <article className="pr-tier pr-tier--hi">
-              <span className="pr-tier__flag">Most popular</span>
-              <h2 className="pr-tier__name">Launch</h2>
-              <p className="pr-tier__for">The full first-hire journey, from status check to a monitored, all-green dashboard.</p>
-              <div className="pr-tier__price"><b className="fe-tabular">£{v.launchPrice}</b><span>/month</span></div>
-              <p className="pr-tier__note"><span className="fe-icon">check_circle</span> 7-day free trial, no card</p>
-              <div className="pr-tier__div"></div>
-              <p className="pr-tier__caps">Up to 5 employees</p>
-              <ul className="pr-tier__list">
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span><b>Everything in Starter</b></span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Guided <b>first-hire journey</b> — all eight duties</span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Employer setup — PAYE, payroll, pension &amp; insurance</span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Employment status advisor</span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Reminders before every deadline</span></li>
-              </ul>
-              <a className="fe-btn fe-btn--primary" href="#">Start free trial</a>
-            </article>
-      
-            {/* Growth */}
-            <article className="pr-tier">
-              <h2 className="pr-tier__name">Growth</h2>
-              <p className="pr-tier__for">For a small, growing team — with everything an adviser needs to help you.</p>
-              <div className="pr-tier__price"><b className="fe-tabular">£{v.growthPrice}</b><span>/month</span></div>
-              <p className="pr-tier__note"><span className="fe-icon">check_circle</span> 7-day free trial, no card</p>
-              <div className="pr-tier__div"></div>
-              <p className="pr-tier__caps">Up to 15 employees</p>
-              <ul className="pr-tier__list">
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span><b>Everything in Launch</b></span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span><b>Multi-employee compliance matrix</b></span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span><b>Adviser share links</b> — read-only for your accountant</span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Multiple contract templates</span></li>
-                <li><span className="fe-icon fe-icon--fill">check_circle</span><span>Priority support</span></li>
-              </ul>
-              <a className="fe-btn fe-btn--secondary" href="#">Start free trial</a>
-            </article>
-      
+            {TIERS.map((t) => (
+              <article key={t.id} className={t.highlight ? "pr-tier pr-tier--hi" : "pr-tier"}>
+                {t.highlight ? <span className="pr-tier__flag">Most popular</span> : null}
+                <h2 className="pr-tier__name">{t.name}</h2>
+                <p className="pr-tier__for">{t.for}</p>
+                <div className="pr-tier__price"><b className="fe-tabular">£{t.price}</b><span>/month</span></div>
+                <p className="pr-tier__note"><span className="fe-icon">check_circle</span> 7-day free trial, no card</p>
+                <div className="pr-tier__div"></div>
+                <p className="pr-tier__caps">Up to {t.cap} employees</p>
+                <ul className="pr-tier__list">
+                  {t.features.filter((f) => !f.startsWith("Up to")).map((f) => (
+                    <li key={f}><span className="fe-icon fe-icon--fill">check_circle</span><span>{f}</span></li>
+                  ))}
+                </ul>
+                <a className={t.highlight ? "fe-btn fe-btn--primary" : "fe-btn fe-btn--secondary"} href="/auth">Start free trial</a>
+              </article>
+            ))}
           </div>
       
           {/* one-off documents, coming soon */}

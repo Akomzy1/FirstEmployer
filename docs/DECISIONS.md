@@ -320,3 +320,8 @@ Approved by: founder (number supplied in session).
 
 Vercel's domain configuration ended up with www as the primary domain and the bare domain 308-redirecting to it; flipping it in the dashboard didn't work out for the founder. Rather than fight the hosting UI, the app adopts www as canonical: `NEXT_PUBLIC_APP_URL=https://www.firstemployer.co.uk` (Vercel env + .env.local), the `SITE_URL` fallback, and the readiness-email link (now derived from `SITE_URL` rather than a literal). The bare-domain redirect preserves paths, so nothing breaks for users typing the short form. The Stripe webhook endpoint must point at the www host — Stripe does not follow redirects.
 Approved by: founder (in session — "the flipping is not working out").
+
+## 2026-07-11 · Launch ops · Marketing pricing cards now render from lib/pricing.ts
+
+The prototype's homepage pricing strip carried an OUTDATED pricing model (a free "Check" tier that does not exist, no Starter, "Growth" named "Grow" with a 10-employee cap) and the ported /pricing Starter card oversold a monitoring-only tier ("Verified contracts & documents") while Growth listed P1 features (compliance matrix, adviser links) as current. Founder directed the marketing pages to match the real model. Both pages now map over TIERS from lib/pricing.ts — names, prices, caps, taglines and feature lists have a single source of truth; tier CTAs point at /auth instead of dead "#" anchors. Visual card structure (classes, layout) is unchanged per Rule 6: prototype wins on appearance, PRD/pricing.ts wins on truth.
+Approved by: founder (in session — "update the pricing on the marketing/landing page as it has different pricing model").
