@@ -275,7 +275,6 @@ export function HomeBody({ v }: { v: MarketingVars }) {
           <div className="persona__grid">
       
             <article className="persona">
-              <div className="image-slot" role="img" aria-label="Photo — Dave in his van" style={{ background: "var(--neutral-100)", display: "grid", placeItems: "center", color: "var(--neutral-400)", font: "500 13px/1.3 var(--font-body)" }}>Photo — Dave in his van</div>
               <div className="persona__body">
                 <div className="persona__who"><b>Dave</b><span>Plumber · Walsall</span></div>
                 <p>Dave is taking on his first apprentice. He's never run payroll and doesn't know if he needs a pension. FirstEmployer walks him through HMRC registration, writes the apprentice's contract, and sets a reminder for the pension.</p>
@@ -284,7 +283,6 @@ export function HomeBody({ v }: { v: MarketingVars }) {
             </article>
       
             <article className="persona">
-              <div className="image-slot" role="img" aria-label="Photo — Amara at her salon" style={{ background: "var(--neutral-100)", display: "grid", placeItems: "center", color: "var(--neutral-400)", font: "500 13px/1.3 var(--font-body)" }}>Photo — Amara at her salon</div>
               <div className="persona__body">
                 <div className="persona__who"><b>Amara</b><span>Salon owner · Leicester</span></div>
                 <p>Amara is hiring a stylist and worried about getting the right-to-work check wrong. She does the guided check in minutes, stores the proof, and gets a follow-up reminder before the visa expires — a legal defence, kept safe.</p>
@@ -293,7 +291,6 @@ export function HomeBody({ v }: { v: MarketingVars }) {
             </article>
       
             <article className="persona">
-              <div className="image-slot" role="img" aria-label="Photo — Yusuf at his counter" style={{ background: "var(--neutral-100)", display: "grid", placeItems: "center", color: "var(--neutral-400)", font: "500 13px/1.3 var(--font-body)" }}>Photo — Yusuf at his counter</div>
               <div className="persona__body">
                 <div className="persona__who"><b>Yusuf</b><span>Takeaway owner · Bradford</span></div>
                 <p>Yusuf has two staff on cash-in-hand and knows it's a risk. He moves them onto proper contracts with payslips and insurance, and now sees every duty on one dashboard — green, and monitored as the law changes.</p>

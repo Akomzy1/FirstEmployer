@@ -330,3 +330,8 @@ Approved by: founder (in session — "update the pricing on the marketing/landin
 
 The ported section claimed a completed DPIA, £1m professional indemnity, a solicitor-reviewed clause library, and Cyber Essentials certification — none yet true — and displayed the prototype's placeholder ICO number (ZB812640). Founder directed it hidden until the tasks are done. Gated behind `SHOW_COMPLIANCE_ASSURANCE = false` in TrustBody.tsx (JSX kept intact for one-flag restore); the ICO line now renders ICO_REGISTRATION so it is correct on re-enable. The rest of /trust (security practices, "What we are not") remains public — those sections are true today.
 Approved by: founder (in session).
+
+## 2026-07-12 · Launch ops · Homepage persona photo placeholders removed
+
+The prototype's "Who it's for" persona cards carry photo slots; no real photography exists, so the grey "Photo — …" placeholders shipped visibly. Founder directed the photo aspect removed — cards are now text-only (name, trade, quote, outcome chip). Cards keep their structure, so real photos can be reinstated later by adding an <img> where the slot sat.
+Approved by: founder (in session).
