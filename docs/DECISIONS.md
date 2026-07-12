@@ -325,3 +325,8 @@ Approved by: founder (in session — "the flipping is not working out").
 
 The prototype's homepage pricing strip carried an OUTDATED pricing model (a free "Check" tier that does not exist, no Starter, "Growth" named "Grow" with a 10-employee cap) and the ported /pricing Starter card oversold a monitoring-only tier ("Verified contracts & documents") while Growth listed P1 features (compliance matrix, adviser links) as current. Founder directed the marketing pages to match the real model. Both pages now map over TIERS from lib/pricing.ts — names, prices, caps, taglines and feature lists have a single source of truth; tier CTAs point at /auth instead of dead "#" anchors. Visual card structure (classes, layout) is unchanged per Rule 6: prototype wins on appearance, PRD/pricing.ts wins on truth.
 Approved by: founder (in session — "update the pricing on the marketing/landing page as it has different pricing model").
+
+## 2026-07-12 · Launch ops · Trust page "Compliance & assurance" section hidden until true
+
+The ported section claimed a completed DPIA, £1m professional indemnity, a solicitor-reviewed clause library, and Cyber Essentials certification — none yet true — and displayed the prototype's placeholder ICO number (ZB812640). Founder directed it hidden until the tasks are done. Gated behind `SHOW_COMPLIANCE_ASSURANCE = false` in TrustBody.tsx (JSX kept intact for one-flag restore); the ICO line now renders ICO_REGISTRATION so it is correct on re-enable. The rest of /trust (security practices, "What we are not") remains public — those sections are true today.
+Approved by: founder (in session).

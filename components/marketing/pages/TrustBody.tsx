@@ -3,6 +3,14 @@
  * follow-up edits (rates render from getLiveConfig — Rule 4). */
 /* eslint-disable @next/next/no-img-element, react/no-unescaped-entities */
 import type { MarketingVars } from "@/lib/marketing/vars";
+import { ICO_REGISTRATION } from "@/lib/marketing/entity";
+
+/** Founder-directed 2026-07-12: hidden until the claims are true — DPIA is
+ *  pending, professional indemnity not yet purchased, the clause library is
+ *  awaiting solicitor sign-off, and Cyber Essentials is not certified. Flip to
+ *  true once each is done (and delete any item that is not). DECISIONS.md. */
+const SHOW_COMPLIANCE_ASSURANCE = false;
+
 export function TrustBody({ v }: { v: MarketingVars }) {
   return (
     <>
@@ -326,7 +334,8 @@ export function TrustBody({ v }: { v: MarketingVars }) {
         </div>
       </section>
       
-      {/* ============ COMPLIANCE & ASSURANCE ============ */}
+      {/* ============ COMPLIANCE & ASSURANCE (hidden — see SHOW_COMPLIANCE_ASSURANCE) ============ */}
+      {SHOW_COMPLIANCE_ASSURANCE ? (
       <section className="mk-section">
         <div className="mk-wrap">
           <div style={{ maxWidth: "720px" }}>
@@ -339,7 +348,7 @@ export function TrustBody({ v }: { v: MarketingVars }) {
               <span className="tr-assure__ic"><span className="fe-icon">how_to_reg</span></span>
               <div>
                 <p className="tr-assure__title">ICO registered</p>
-                <p className="tr-assure__body">We're registered with the Information Commissioner's Office as a data controller. Registration <span className="fe-tabular">ZB812640</span>.</p>
+                <p className="tr-assure__body">We're registered with the Information Commissioner's Office as a data controller. Registration <span className="fe-tabular">{ICO_REGISTRATION}</span>.</p>
               </div>
             </div>
             <div className="tr-assure__item">
@@ -375,7 +384,8 @@ export function TrustBody({ v }: { v: MarketingVars }) {
           </div>
         </div>
       </section>
-      
+      ) : null}
+
       {/* ============ WHAT WE ARE NOT ============ */}
       <section className="mk-section tr-not">
         <div className="mk-wrap">
