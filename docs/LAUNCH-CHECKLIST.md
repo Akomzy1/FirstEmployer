@@ -32,10 +32,14 @@ marked NOT DONE where true** — nothing here is aspirational (CLAUDE.md §8).
 - [x] Cron — **done + verified live (2026-07-11)**: `vercel.json` cron hits `/api/jobs/uprating`
       02:00 UTC (GET + Bearer, same guard as POST). Manual authenticated run returned 200:
       config 2026.2, 20 businesses / 2 employees checked, 0 flagged. Wrong secret → 401.
-- [x] Lighthouse — **done + green in CI (2026-07-12)**: audits production on every push
-      (run #10 SUCCESS). Home: perf 99, LCP 746ms, CLS 0.011, SEO 100. Fixed en route:
-      font-swap layout shift (CLS 0.162 → 0.011) via metric-matched Inter fallback,
-      `font-display: block` on the icon font, and preloads for the two critical fonts.
+- [x] Lighthouse — **done + green in CI (2026-07-12)**: audits production on every push,
+      median of 3 runs (run #13 SUCCESS). Desktop: perf 99, LCP 746ms, CLS 0.011, SEO 100.
+      Fixed en route: font-swap layout shift (CLS 0.162 → 0.011: metric-matched Inter
+      fallback, icon-font `font-display: block`, preloads) and the **3MB icon font**
+      (subset to the 101 used glyphs → 159KB via `scripts/subset-icons.mjs`; re-run it
+      when adding a NEW icon). Throttled mobile: perf 54 → 92, LCP 17.1s → ~3.0s.
+      Known gap: CLAUDE.md §6 budgets LCP < 2.0s on *throttled mobile* — remaining ~1s
+      is critical-CSS/JS weight; follow-up optimization, not a launch blocker.
 - [ ] PWA installability verified on Android Chrome and iOS Safari (add to home screen); airplane-mode mid-questionnaire → reconnect → nothing lost
 - [ ] axe pass on the top 10 screens (focus management + aria labels are in; the browser run needs the deploy)
 - [ ] End-to-end journey J1 on production data: signup → status → setup → examined contract → RTW → all-green dashboard
