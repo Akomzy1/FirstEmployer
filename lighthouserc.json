@@ -5,7 +5,7 @@
         "https://www.firstemployer.co.uk/",
         "https://www.firstemployer.co.uk/guides/first-employee-checklist"
       ],
-      "numberOfRuns": 1,
+      "numberOfRuns": 3,
       "settings": { "preset": "desktop" }
     },
     "assert": {
