@@ -21,15 +21,13 @@ jobs:
       - run: pnpm gate
       - run: pnpm build
   lighthouse:
+    # Audits PRODUCTION (Vercel deploys main independently) — a cold localhost
+    # server on a shared runner measured the runner, not the product. The gate
+    # job (~5 min of tests + build) gives the Vercel deploy time to land first.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     needs: gate
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with: { version: 9 }
-      - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
       - run: npx --yes @lhci/cli autorun --config=lighthouserc.json
         # Budgets: SEO >= 0.95, LCP < 2s, CLS < 0.05 on Home + the pillar guide.

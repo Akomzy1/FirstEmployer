@@ -1,8 +1,10 @@
 {
   "ci": {
     "collect": {
-      "url": ["http://localhost:3000/", "http://localhost:3000/guides/first-employee-checklist"],
-      "startServerCommand": "npm run start",
+      "url": [
+        "https://www.firstemployer.co.uk/",
+        "https://www.firstemployer.co.uk/guides/first-employee-checklist"
+      ],
       "numberOfRuns": 1,
       "settings": { "preset": "desktop" }
     },

@@ -22,6 +22,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-GB">
+      <head>
+        {/* Body + heading fonts preloaded to shrink the swap window (CLS).
+            The 3MB icon font is deliberately NOT preloaded — it would delay
+            LCP; font-display: block covers it instead. */}
+        <link rel="preload" href="/fonts/Inter-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/GeneralSans-Semibold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+      </head>
       <body>
         {children}
         <ServiceWorkerRegister />

@@ -37,8 +37,23 @@
   font-family: 'Material Symbols Rounded';
   font-style: normal;
   font-weight: 400 600;
-  font-display: swap;
+  /* block, not swap: an icon font must never flash its ligature text
+     ("lock", "verified") in a fallback face — that swap was a measured
+     CLS culprit on the live homepage. */
+  font-display: block;
   src: url('/fonts/MaterialSymbolsRounded.woff2') format('woff2');
+}
+
+/* Metric-matched fallback so the Arial→Inter swap occupies identical space
+   (ascent/size-adjust values are the standard Inter-vs-Arial overrides).
+   Fixes the hero layout shift measured at CLS 0.149 on the live homepage. */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+  size-adjust: 107.12%;
 }
 
 :root {
@@ -87,8 +102,8 @@
 }
 
 :root {
-  --font-display: "General Sans", "Inter", -apple-system, sans-serif; /* characterful humanist grotesque */
-  --font-body: "Inter", -apple-system, "Segoe UI", sans-serif;        /* legible workhorse */
+  --font-display: "General Sans", "Inter", "Inter Fallback", -apple-system, sans-serif; /* characterful humanist grotesque */
+  --font-body: "Inter", "Inter Fallback", -apple-system, "Segoe UI", sans-serif;        /* legible workhorse */
 
   /* Scale — body is never below 17px */
   --text-display: 600 44px/1.08 var(--font-display);  /* tracking -0.02em */
