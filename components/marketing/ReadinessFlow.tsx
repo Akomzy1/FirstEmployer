@@ -44,19 +44,7 @@ export function ReadinessFlow() {
   useEffect(() => {
     fbqTrack("ViewContent", { content_name: "readiness_check" });
   }, []);
-  // Funnel steps (trackCustom, once per session each): first question rendered
-  // → results screen reached. Lead fires separately on email capture.
   const funnelFired = useRef({ start: false, complete: false });
-  useEffect(() => {
-    if (step === 0 && !funnelFired.current.start) {
-      funnelFired.current.start = true;
-      fbqTrackCustom("ReadinessCheckStart", { content_name: "readiness_check" });
-    }
-    if (step === "results" && !funnelFired.current.complete) {
-      funnelFired.current.complete = true;
-      fbqTrackCustom("ReadinessCheckComplete", { content_name: "readiness_check", score });
-    }
-  }, [step, score]);
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(STORE_KEY);
@@ -86,6 +74,19 @@ export function ReadinessFlow() {
   const score = QUESTIONS.length - gaps.length;
   const gapIds = gaps.map((g) => g.gapId).filter(Boolean);
   const onboardingHref = "/onboarding" + (gapIds.length ? `?gaps=${gapIds.join(",")}` : "");
+
+  // Funnel steps (trackCustom, once per session each): first question rendered
+  // → results screen reached. Lead fires separately on email capture.
+  useEffect(() => {
+    if (step === 0 && !funnelFired.current.start) {
+      funnelFired.current.start = true;
+      fbqTrackCustom("ReadinessCheckStart", { content_name: "readiness_check" });
+    }
+    if (step === "results" && !funnelFired.current.complete) {
+      funnelFired.current.complete = true;
+      fbqTrackCustom("ReadinessCheckComplete", { content_name: "readiness_check", score });
+    }
+  }, [step, score]);
 
   async function submitEmail() {
     setBusy(true);
