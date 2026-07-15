@@ -1,8 +1,10 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GAP_META } from "@/lib/content/gap-questions";
+import { sendMetaEvent } from "@/lib/meta/capi";
 import type { TierId } from "@/lib/tiers";
 
 export interface OnboardingDraft {
@@ -66,6 +68,15 @@ export async function finishOnboarding(input: FinishOnboardingInput): Promise<vo
     p_journey: {},
   });
   if (rpcError) throw new Error(`create business failed: ${rpcError.message}`);
+
+  // Ads measurement (best-effort): the card-free 7-day trial starts at
+  // business creation, so this is the ad funnel's deepest conversion event.
+  await sendMetaEvent({
+    eventName: "StartTrial",
+    eventId: randomUUID(),
+    email: user.email ?? undefined,
+    customData: { content_name: "onboarding", tier: input.tier },
+  });
 
   if (input.path === "already" && input.gapAnswers) {
     const rows = GAP_META.map((g) => {

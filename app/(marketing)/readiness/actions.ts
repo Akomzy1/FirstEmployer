@@ -2,16 +2,19 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { SITE_URL, SUPPORT_EMAIL } from "@/lib/marketing/entity";
+import { sendMetaEvent } from "@/lib/meta/capi";
 
 /**
  * Readiness-check email gate (FR-8.2): store the lead, and send the results
  * email through Resend when a key is configured (dev/CI degrade honestly to
  * store-only). The lead lands before signup, so this is tenantless.
+ * `metaEventId` pairs this with the browser fbq('Lead') for deduplication.
  */
 export async function captureReadinessLead(input: {
   email: string;
   score: number;
   gaps: string[];
+  metaEventId?: string;
 }): Promise<{ ok: true }> {
   const email = input.email.trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("That email doesn't look right.");
@@ -23,6 +26,17 @@ export async function captureReadinessLead(input: {
     payload: { score: input.score, gaps: input.gaps },
   });
   if (error) throw new Error(`lead save failed: ${error.message}`);
+
+  // Ads measurement (best-effort): server half of the dual-fired Lead event.
+  if (input.metaEventId) {
+    await sendMetaEvent({
+      eventName: "Lead",
+      eventId: input.metaEventId,
+      email,
+      eventSourceUrl: `${SITE_URL}/readiness`,
+      customData: { content_name: "readiness_check" },
+    });
+  }
 
   const key = process.env.RESEND_API_KEY;
   if (key) {

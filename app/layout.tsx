@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { MetaPixel } from "@/components/marketing/MetaPixel";
 
 export const metadata: Metadata = {
   title: {
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body>
         {children}
         <ServiceWorkerRegister />
+        <MetaPixel />
       </body>
     </html>
   );

@@ -3,9 +3,10 @@
 /* Readiness check (FR-8.1/8.2) — one question per screen on the app's radio-card
  * pattern, results with severity-ordered gaps, an email gate for the full
  * results, and the gaps handoff into onboarding via querystring. */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Icon, RadioCards, StepDots } from "@/components/system";
 import { captureReadinessLead } from "@/app/(marketing)/readiness/actions";
+import { fbqTrack, fbqTrackCustom, newMetaEventId } from "@/lib/meta/client";
 
 export interface ReadinessQuestion {
   id: string;
@@ -39,6 +40,23 @@ export function ReadinessFlow() {
   // killed tab restores; server persistence starts at signup).
   const [step, setStepRaw] = useState<Step>("intro");
   const [answers, setAnswersRaw] = useState<Record<string, "yes" | "no">>({});
+  // Ads measurement: the readiness check is the ad-funnel landing content.
+  useEffect(() => {
+    fbqTrack("ViewContent", { content_name: "readiness_check" });
+  }, []);
+  // Funnel steps (trackCustom, once per session each): first question rendered
+  // → results screen reached. Lead fires separately on email capture.
+  const funnelFired = useRef({ start: false, complete: false });
+  useEffect(() => {
+    if (step === 0 && !funnelFired.current.start) {
+      funnelFired.current.start = true;
+      fbqTrackCustom("ReadinessCheckStart", { content_name: "readiness_check" });
+    }
+    if (step === "results" && !funnelFired.current.complete) {
+      funnelFired.current.complete = true;
+      fbqTrackCustom("ReadinessCheckComplete", { content_name: "readiness_check", score });
+    }
+  }, [step, score]);
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(STORE_KEY);
@@ -73,7 +91,11 @@ export function ReadinessFlow() {
     setBusy(true);
     setError(null);
     try {
-      await captureReadinessLead({ email, score, gaps: gaps.map((g) => g.gapLabel) });
+      // Dual-fire Lead (browser + Conversions API) with a shared id so Meta
+      // deduplicates; the server side carries the hashed email for matching.
+      const metaEventId = newMetaEventId();
+      await captureReadinessLead({ email, score, gaps: gaps.map((g) => g.gapLabel), metaEventId });
+      fbqTrack("Lead", { content_name: "readiness_check" }, metaEventId);
       setStep("results");
     } catch (e) {
       setError((e as Error).message);
