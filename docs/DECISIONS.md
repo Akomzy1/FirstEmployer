@@ -345,3 +345,8 @@ Approved by: build session (performance pass promised at P01; no visual change).
 
 Pixel ID 1340724618262253 set via NEXT_PUBLIC_META_PIXEL_ID (env-gated: dev/CI render no pixel). Loader was already sitewide in the root layout (next/script afterInteractive; PageView on load + App Router route changes — the /app routes get PageView only, no custom events). Added per founder spec: trackCustom ReadinessCheckStart when the first question renders, trackCustom ReadinessCheckComplete (with score) on the results screen, both once per session; Lead on successful email capture was already dual-fired browser+Conversions-API with a shared event_id for dedup. No PII in browser events; CAPI hashes the email server-side.
 Approved by: founder (in session — full spec provided).
+
+## 2026-07-16 · Launch ops · Guidance corpus gap: employers' liability insurance added
+
+The founder asked the live assistant "can I maintain an employee without insurance?" and got the honest no-source fallback — correct behaviour, but the question is inside the product's core scope (EL insurance is one of the eight duties) and the corpus had no EL document. Added content/guidance/employers-liability-insurance.md (ELCA 1969 + HSE guidance, qualitative figures only — exact values stay in config per Rule 4; family/incorporation exemption noted). Deterministic retrieval verified: the document is the top hit for the founder's exact question. The grounded-or-refuse design is unchanged — the fix is corpus coverage, never loosening the validator.
+Approved by: founder (gap surfaced in session).
